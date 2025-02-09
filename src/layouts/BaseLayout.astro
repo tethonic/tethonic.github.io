@@ -1,0 +1,17 @@
+---
+import TethonicConfig from "../../tethonic.config";
+import BaseHead from "../components/BaseHead.astro";
+---
+
+<html lang={TethonicConfig.locale}>
+  <BaseHead />
+  <body class="overflow-y-hidden">
+    <slot />
+  </body>
+</html>
+
+<style>
+  body {
+    @apply bg-[var(--background-color)];
+  }
+</style>
