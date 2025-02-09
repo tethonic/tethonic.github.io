@@ -37,15 +37,15 @@ const TethonicConfig: Configuration = {
   socialLinks: [
     {
       icon: "line-md:github-loop",
-      link: "https://github.com/WhitePaper233",
+      link: "https://github.com/tethonic",
     },
     {
       icon: "mingcute:bilibili-line",
-      link: "https://space.bilibili.com/22433608",
+      link: "#",
     },
     {
       icon: "mingcute:netease-music-line",
-      link: "https://music.163.com/#/user/home?id=125291648",
+      link: "#",
     },
   ],
 
