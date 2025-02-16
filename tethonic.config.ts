@@ -31,9 +31,9 @@ const TethonicConfig: Configuration = {
     },
   ],
 
-  username: "WhitePaper 白芷",
-  sign: "Ad Astra Per Aspera.",
-  avatarUrl: "https://s2.loli.net/2025/01/25/FPpTrQSezM8ivbl.webp",
+  username: "Tethonic",
+  sign: "Unlock the Future of Crypto",
+  avatarUrl: "/tethonic.svg",
   socialLinks: [
     {
       icon: "line-md:github-loop",
