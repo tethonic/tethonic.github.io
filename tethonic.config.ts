@@ -26,8 +26,8 @@ const TethonicConfig: Configuration = {
       href: "/about",
     },
     {
-      nameKey: I18nKeys.nav_bar_github,
-      href: "https://github.com/tethonic",
+      nameKey: I18nKeys.nav_bar_exchange,
+      href: "https://exchange.tethonic.com",
     },
   ],
 
@@ -36,8 +36,8 @@ const TethonicConfig: Configuration = {
   avatarUrl: "/tethonic.svg",
   socialLinks: [
     {
-      icon: "line-md:github-loop",
-      link: "https://github.com/tethonic",
+      icon: "heroicons:arrow-path-rounded-square",
+      link: "https://exchange.tethonic.com",
     },
     {
       icon: "mingcute:bilibili-line",
