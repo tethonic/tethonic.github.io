@@ -27,7 +27,7 @@ const TethonicConfig: Configuration = {
     },
     {
       nameKey: I18nKeys.nav_bar_exchange,
-      href: "/exchange/",
+      href: "https://exchange.tethonic.com/",
     },
   ],
 
@@ -37,7 +37,7 @@ const TethonicConfig: Configuration = {
   socialLinks: [
     {
       icon: "heroicons:arrow-path-rounded-square",
-      link: "/exchange/",
+      link: "https://exchange.tethonic.com/",
     },
     {
       icon: "mdi:instagram",
