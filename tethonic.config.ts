@@ -3,10 +3,10 @@ import type { Configuration } from "./src/types/config";
 
 const TethonicConfig: Configuration = {
   title: "Tethonic",
-  subTitle: "Tethonic",
+  subTitle: "crypto currency news",
   brandTitle: "Tethonic",
 
-  description: "Tethonic",
+  description: "Tethonic: crypto currency news",
 
   site: "https://tethonic.com",
 
@@ -32,7 +32,7 @@ const TethonicConfig: Configuration = {
   ],
 
   username: "Tethonic",
-  sign: "Unlock the Future of Crypto",
+  sign: "crypto currency news",
   avatarUrl: "/tethonic.svg",
   socialLinks: [
     {
