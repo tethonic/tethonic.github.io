@@ -40,15 +40,19 @@ const TethonicConfig: Configuration = {
       link: "/exchange/",
     },
     {
-      icon: "mingcute:bilibili-line",
-      link: "#",
+      icon: "mdi:instagram",
+      link: "https://instagram.com/tethonic_com",
     },
     {
-      icon: "mingcute:netease-music-line",
-      link: "#",
+      icon: "mdi:telegram",
+      link: "https://t.me/tethonic",
+    },
+    {
+      icon: "heroicons:envelope",
+      link: "mailto:tethonic@gmail.com",
     },
   ],
-
+  
   banners: [
     "/slides/1.jpg",
     "/slides/2.jpg",
