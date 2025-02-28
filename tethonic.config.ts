@@ -37,7 +37,7 @@ const TethonicConfig: Configuration = {
   socialLinks: [
     {
       icon: "heroicons:arrow-path-rounded-square",
-      link: "https://exchange.tethonic.com",
+      link: "https://tethonic.com/exchange/",
     },
     {
       icon: "mingcute:bilibili-line",
