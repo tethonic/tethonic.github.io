@@ -273,11 +273,11 @@ const TechnicalAnalysisComponent = ({ language, cryptoData }: TechnicalAnalysisP
 
       {/* Technical Indicators */}
       <Tabs defaultValue="rsi" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="rsi">RSI</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 flex-row-reverse">
+          <TabsTrigger value="volume">حجم</TabsTrigger>
+          <TabsTrigger value="bollinger">بولینگر</TabsTrigger>
           <TabsTrigger value="macd">MACD</TabsTrigger>
-          <TabsTrigger value="bollinger">Bollinger</TabsTrigger>
-          <TabsTrigger value="volume">Volume</TabsTrigger>
+          <TabsTrigger value="rsi">RSI</TabsTrigger>
         </TabsList>
 
         {/* RSI Analysis */}

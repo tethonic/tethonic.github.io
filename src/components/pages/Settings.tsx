@@ -282,7 +282,6 @@ const SettingsPage = () => {
   };
 
   const t = texts.fa;
-  const isRTL = true;
 
   // Handler functions
   const handleNotificationChange = (key: string, value: boolean) => {
@@ -335,54 +334,56 @@ const SettingsPage = () => {
   };
 
   return (
-    <div className={`p-6 space-y-6 custom-scrollbar ${isRTL ? 'text-right' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className={`p-6 space-y-6 custom-scrollbar text-right`} dir="rtl">
       {/* Header */}
-      <div className="space-y-2">
+      <div className="space-y-2 text-right">
         <h1 className="text-3xl font-bold">{t.title}</h1>
         <p className="text-muted-foreground">{t.subtitle}</p>
       </div>
 
       <Tabs defaultValue="account" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="account">{t.account}</TabsTrigger>
-          <TabsTrigger value="notifications">{t.notifications}</TabsTrigger>
-          <TabsTrigger value="appearance">{t.appearance}</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 flex-row-reverse">
           <TabsTrigger value="symbols">{t.symbols}</TabsTrigger>
+          <TabsTrigger value="appearance">{t.appearance}</TabsTrigger>
+          <TabsTrigger value="notifications">{t.notifications}</TabsTrigger>
+          <TabsTrigger value="account">{t.account}</TabsTrigger>
         </TabsList>
 
         {/* Account & Security Settings */}
         <TabsContent value="account" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <User className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 justify-end">
                 {t.personalInfo}
+                <User className="h-5 w-5" />
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="username">{t.username}</Label>
+                  <Label htmlFor="username" className="text-right block">{t.username}</Label>
                   <Input 
                     id="username" 
                     value={profileData.username}
                     onChange={(e) => handleProfileChange('username', e.target.value)}
+                    className="text-right"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="email">{t.email}</Label>
+                  <Label htmlFor="email" className="text-right block">{t.email}</Label>
                   <Input 
                     id="email" 
                     type="email" 
                     value={profileData.email}
                     onChange={(e) => handleProfileChange('email', e.target.value)}
+                    className="text-right"
                   />
                 </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
-                  <Label>{t.language}</Label>
+                  <Label className="text-right block">{t.language}</Label>
                   <Select 
                     value={profileData.language}
                     onValueChange={(value) => handleProfileChange('language', value)}
@@ -397,7 +398,7 @@ const SettingsPage = () => {
                   </Select>
                 </div>
                 <div className="space-y-2">
-                  <Label>{t.timezone}</Label>
+                  <Label className="text-right block">{t.timezone}</Label>
                   <Select 
                     value={profileData.timezone}
                     onValueChange={(value) => handleProfileChange('timezone', value)}
@@ -419,44 +420,47 @@ const SettingsPage = () => {
 
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 justify-end">
                 {t.changePassword}
+                <Shield className="h-5 w-5" />
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-4">
               <div className="grid grid-cols-1 gap-4">
                 <div className="space-y-2">
-                  <Label htmlFor="current-password">{t.currentPassword}</Label>
+                  <Label htmlFor="current-password" className="text-right block">{t.currentPassword}</Label>
                   <Input 
                     id="current-password" 
                     type="password"
                     value={passwordData.currentPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                    className="text-right"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="new-password">{t.newPassword}</Label>
+                  <Label htmlFor="new-password" className="text-right block">{t.newPassword}</Label>
                   <Input 
                     id="new-password" 
                     type="password"
                     value={passwordData.newPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                    className="text-right"
                   />
                 </div>
                 <div className="space-y-2">
-                  <Label htmlFor="confirm-password">{t.confirmPassword}</Label>
+                  <Label htmlFor="confirm-password" className="text-right block">{t.confirmPassword}</Label>
                   <Input 
                     id="confirm-password" 
                     type="password"
                     value={passwordData.confirmPassword}
                     onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                    className="text-right"
                   />
                 </div>
                 <Button 
                   onClick={handlePasswordChange}
                   disabled={isChangingPassword}
-                  className="gap-2 w-fit"
+                  className="gap-2 w-fit mr-auto"
                 >
                   {isChangingPassword && <RefreshCw className="h-4 w-4 animate-spin" />}
                   {t.changePassword}
@@ -470,23 +474,23 @@ const SettingsPage = () => {
         <TabsContent value="notifications" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Bell className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 justify-end">
                 {t.notificationSettings}
+                <Bell className="h-5 w-5" />
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               {Object.entries(notifications).map(([key, value]) => (
                 <div key={key} className="flex items-center justify-between">
-                  <div className="space-y-0.5">
-                    <Label className="text-base font-medium">
-                      {t[key as keyof typeof t] as string}
-                    </Label>
-                  </div>
                   <Switch
                     checked={value as boolean}
                     onCheckedChange={(checked) => handleNotificationChange(key, checked)}
                   />
+                  <div className="space-y-0.5 text-right">
+                    <Label className="text-base font-medium">
+                      {t[key as keyof typeof t] as string}
+                    </Label>
+                  </div>
                 </div>
               ))}
             </CardContent>
@@ -497,9 +501,9 @@ const SettingsPage = () => {
         <TabsContent value="appearance" className="space-y-6">
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Palette className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 justify-end">
                 {t.themeSettings}
+                <Palette className="h-5 w-5" />
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
@@ -538,15 +542,15 @@ const SettingsPage = () => {
           {/* Crypto Service Selection */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Settings className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 justify-end">
                 {t.cryptoService}
+                <Settings className="h-5 w-5" />
               </CardTitle>
             </CardHeader>
             <CardContent>
               <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label>
+                  <Label className="text-right block">
                     {'انتخاب ارائه‌دهنده داده‌های ارز:'}
                   </Label>
                   <Select value={selectedCryptoService} onValueChange={(value: CryptoServiceName) => setSelectedCryptoService(value)}>
@@ -569,7 +573,7 @@ const SettingsPage = () => {
                     </SelectContent>
                   </Select>
                 </div>
-                <p className="text-sm text-muted-foreground">
+                <p className="text-sm text-muted-foreground text-right">
                   {'ارائه‌دهنده داده‌های ارز دیجیتال مورد نظر خود را انتخاب کنید. سرویس‌های دارای WebSocket به‌روزرسانی‌های لحظه‌ای ارائه می‌دهند.'}
                 </p>
               </div>
@@ -579,16 +583,13 @@ const SettingsPage = () => {
           {/* Crypto Symbols */}
           <Card>
             <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Coins className="h-5 w-5" />
+              <CardTitle className="flex items-center gap-2 justify-end">
                 {t.cryptoSymbols}
+                <Coins className="h-5 w-5" />
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
               <div className="flex justify-between items-center">
-                <p className="text-sm text-muted-foreground">
-                  {'نمادهای ارز دیجیتال برای نمایش در داشبورد اضافه کنید'}
-                </p>
                 <Dialog open={newSymbolDialog} onOpenChange={setNewSymbolDialog}>
                   <DialogTrigger asChild>
                     <Button className="gap-2">
@@ -598,43 +599,40 @@ const SettingsPage = () => {
                   </DialogTrigger>
                   <DialogContent className="max-w-sm">
                     <DialogHeader>
-                      <DialogTitle>{t.addSymbol}</DialogTitle>
-                      <DialogDescription>
+                      <DialogTitle className="text-right">{t.addSymbol}</DialogTitle>
+                      <DialogDescription className="text-right">
                         {'نماد ارز دیجیتالی که می‌خواهید دنبال کنید را وارد کنید'}
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
                       <div className="space-y-2">
-                        <Label>Symbol</Label>
+                        <Label className="text-right block">Symbol</Label>
                         <Input
                           value={newSymbol}
                           onChange={(e) => setNewSymbol(e.target.value)}
                           placeholder={t.symbolPlaceholder}
-                          className="uppercase"
+                          className="uppercase text-right"
                         />
                       </div>
                       <div className="flex gap-2">
-                        <Button onClick={handleAddSymbol} className="flex-1">
-                          {t.add}
-                        </Button>
                         <Button variant="outline" onClick={() => setNewSymbolDialog(false)} className="flex-1">
                           {t.cancel}
+                        </Button>
+                        <Button onClick={handleAddSymbol} className="flex-1">
+                          {t.add}
                         </Button>
                       </div>
                     </div>
                   </DialogContent>
                 </Dialog>
+                <p className="text-sm text-muted-foreground text-right">
+                  {'نمادهای ارز دیجیتال برای نمایش در داشبورد اضافه کنید'}
+                </p>
               </div>
 
               <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
                 {cryptoSymbols.map((symbol) => (
                   <div key={symbol} className="flex items-center justify-between p-3 border rounded-lg bg-card">
-                    <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center">
-                        <span className="text-white text-xs font-bold">{symbol.slice(0, 2)}</span>
-                      </div>
-                      <span className="font-medium">{symbol}</span>
-                    </div>
                     <Button
                       size="sm"
                       variant="ghost"
@@ -643,6 +641,12 @@ const SettingsPage = () => {
                     >
                       <Trash2 className="h-4 w-4" />
                     </Button>
+                    <div className="flex items-center gap-3">
+                      <span className="font-medium">{symbol}</span>
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">{symbol.slice(0, 2)}</span>
+                      </div>
+                    </div>
                   </div>
                 ))}
               </div>
@@ -660,14 +664,14 @@ const SettingsPage = () => {
       {/* Backup & Restore Footer */}
       <Card>
         <CardHeader>
-          <CardTitle className="flex items-center gap-2">
-            <Database className="h-5 w-5" />
+          <CardTitle className="flex items-center gap-2 justify-end">
             {t.backup}
+            <Database className="h-5 w-5" />
           </CardTitle>
         </CardHeader>
         <CardContent>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <div className="space-y-2">
+            <div className="space-y-2 text-right">
               <h3 className="font-medium">{t.exportBackup}</h3>
               <p className="text-sm text-muted-foreground">
                 {t.exportDesc}
@@ -678,7 +682,7 @@ const SettingsPage = () => {
               </Button>
             </div>
 
-            <div className="space-y-2">
+            <div className="space-y-2 text-right">
               <h3 className="font-medium">{t.importBackup}</h3>
               <p className="text-sm text-muted-foreground">
                 {t.importDesc}

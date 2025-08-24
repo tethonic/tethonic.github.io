@@ -328,11 +328,11 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
 
       {/* Signals Tabs */}
       <Tabs defaultValue="all" className="space-y-4">
-        <TabsList className="grid w-full grid-cols-4">
-          <TabsTrigger value="all">{t.allSignals}</TabsTrigger>
-          <TabsTrigger value="buy">{t.buySignals}</TabsTrigger>
-          <TabsTrigger value="sell">{t.sellSignals}</TabsTrigger>
+        <TabsList className="grid w-full grid-cols-4 flex-row-reverse">
           <TabsTrigger value="high-confidence">{t.highConfidence}</TabsTrigger>
+          <TabsTrigger value="sell">{t.sellSignals}</TabsTrigger>
+          <TabsTrigger value="buy">{t.buySignals}</TabsTrigger>
+          <TabsTrigger value="all">{t.allSignals}</TabsTrigger>
         </TabsList>
 
         <TabsContent value="all">
