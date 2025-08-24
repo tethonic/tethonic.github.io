@@ -13,8 +13,7 @@ import {
   DollarSign,
   Clock,
   RefreshCw,
-  Signal,
-  Filter
+  Signal
 } from 'lucide-react';
 import { useTradingSignals } from '@/hooks/useTradingSignals';
 import type { CryptocurrencyData } from '@/services/cryptoTypes';
@@ -133,7 +132,6 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
   };
 
   const t = texts;
-  const isRTL = true;
 
   const filterSignals = (filterType: string) => {
     let filteredSignals = signals;
@@ -258,17 +256,12 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
   );
 
   return (
-    <div dir={isRTL ? 'rtl' : 'ltr'} className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
+    <div dir="rtl" className="p-6 space-y-6 text-right">
       {/* Header */}
-      <div className="flex items-center justify-between">
-        <div className="space-y-1">
-          <h1 className="text-3xl font-bold">{t.title}</h1>
-          <p className="text-muted-foreground">{t.subtitle}</p>
-        </div>
+      <div className="flex items-center justify-between flex-row-reverse">
         <div className="flex items-center gap-3">
           {/* Symbol Filter */}
           <div className="flex items-center gap-2">
-            <Filter className="h-4 w-4 text-muted-foreground" />
             <Select value={selectedSymbol} onValueChange={setSelectedSymbol}>
               <SelectTrigger className="w-32">
                 <SelectValue placeholder={t.allSymbols} />
@@ -290,26 +283,18 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
             {t.refresh}
           </Button>
         </div>
+        <div className="space-y-1 text-right">
+          <h1 className="text-3xl font-bold">{t.title}</h1>
+          <p className="text-muted-foreground">{t.subtitle}</p>
+        </div>
       </div>
 
       {/* Statistics Cards */}
       <div className="grid grid-cols-2 md:grid-cols-5 gap-4">
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-primary">{totalSignals}</div>
-            <div className="text-sm text-muted-foreground">{t.totalSignals}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-green-600">{buySignals}</div>
-            <div className="text-sm text-muted-foreground">{t.buyCount}</div>
-          </CardContent>
-        </Card>
-        <Card>
-          <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-red-600">{sellSignals}</div>
-            <div className="text-sm text-muted-foreground">{t.sellCount}</div>
+            <div className="text-2xl font-bold text-purple-600">{highConfidenceSignals}</div>
+            <div className="text-sm text-muted-foreground">{t.highConfidenceCount}</div>
           </CardContent>
         </Card>
         <Card>
@@ -320,8 +305,20 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
         </Card>
         <Card>
           <CardContent className="p-4 text-center">
-            <div className="text-2xl font-bold text-purple-600">{highConfidenceSignals}</div>
-            <div className="text-sm text-muted-foreground">{t.highConfidenceCount}</div>
+            <div className="text-2xl font-bold text-red-600">{sellSignals}</div>
+            <div className="text-sm text-muted-foreground">{t.sellCount}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-green-600">{buySignals}</div>
+            <div className="text-sm text-muted-foreground">{t.buyCount}</div>
+          </CardContent>
+        </Card>
+        <Card>
+          <CardContent className="p-4 text-center">
+            <div className="text-2xl font-bold text-primary">{totalSignals}</div>
+            <div className="text-sm text-muted-foreground">{t.totalSignals}</div>
           </CardContent>
         </Card>
       </div>
