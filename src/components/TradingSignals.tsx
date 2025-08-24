@@ -20,11 +20,10 @@ import { useTradingSignals } from '@/hooks/useTradingSignals';
 import type { CryptocurrencyData } from '@/services/cryptoTypes';
 
 interface TradingSignalsProps {
-  language: 'en' | 'fa';
   cryptoData: CryptocurrencyData[];
 }
 
-const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) => {
+const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
   const [refreshing, setRefreshing] = useState(false);
   const [selectedSymbol, setSelectedSymbol] = useState<string>('all');
   const { 
@@ -34,7 +33,7 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
     sellSignals, 
     holdSignals, 
     highConfidenceSignals 
-  } = useTradingSignals(cryptoData, language);
+  } = useTradingSignals(cryptoData);
 
   // Get unique symbols from crypto data
   const availableSymbols = [...new Set(cryptoData.map(crypto => crypto.symbol))].sort();
@@ -87,80 +86,43 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
   };
 
   const texts = {
-    en: {
-      title: 'Trading Signals',
-      subtitle: 'AI-powered cryptocurrency trading signals',
-      refresh: 'Refresh Signals',
-      allSignals: 'All Signals',
-      buySignals: 'Buy Signals',
-      sellSignals: 'Sell Signals',
-      highConfidence: 'High Confidence',
-      statistics: 'Signal Statistics',
-      totalSignals: 'Total Signals',
-      buyCount: 'Buy Signals',
-      sellCount: 'Sell Signals',
-      holdCount: 'Hold Signals',
-      waitCount: 'Wait Signals',
-      highConfidenceCount: 'High Confidence',
-      symbol: 'Symbol',
-      signal: 'Signal',
-      confidence: 'Confidence',
-      action: 'Action',
-      reasons: 'Analysis',
-      entryPrice: 'Entry Price',
-      stopLoss: 'Stop Loss',
-      takeProfit: 'Take Profit',
-      riskReward: 'Risk/Reward',
-      lastUpdate: 'Last Update',
-      trading: 'Trading',
-      moreReasons: 'more items',
-      entryLabel: 'Entry',
-      stopLossLabel: 'Stop',
-      takeProfitLabel: 'Profit',
-      liveSignals: 'Live signals active',
-      lastUpdateTime: 'Last update',
-      live: 'Live',
-      allSymbols: 'All Symbols'
-    },
-    fa: {
-      title: 'سیگنال‌های معاملاتی',
-      subtitle: 'سیگنال‌های معاملاتی ارزهای دیجیتال با هوش مصنوعی',
-      refresh: 'به‌روزرسانی سیگنال‌ها',
-      allSignals: 'همه سیگنال‌ها',
-      buySignals: 'سیگنال‌های خرید',
-      sellSignals: 'سیگنال‌های فروش',
-      highConfidence: 'اطمینان بالا',
-      statistics: 'آمار سیگنال‌ها',
-      totalSignals: 'کل سیگنال‌ها',
-      buyCount: 'سیگنال خرید',
-      sellCount: 'سیگنال فروش',
-      holdCount: 'نگهداری',
-      waitCount: 'انتظار',
-      highConfidenceCount: 'اطمینان بالا',
-      symbol: 'نماد',
-      signal: 'سیگنال',
-      confidence: 'اطمینان',
-      action: 'عملیات',
-      reasons: 'تحلیل',
-      entryPrice: 'قیمت ورود',
-      stopLoss: 'حد ضرر',
-      takeProfit: 'هدف سود',
-      riskReward: 'ریسک/سود',
-      lastUpdate: 'آخرین به‌روزرسانی',
-      trading: 'معاملات',
-      moreReasons: 'مورد دیگر',
-      entryLabel: 'ورود',
-      stopLossLabel: 'ضرر',
-      takeProfitLabel: 'سود',
-      liveSignals: 'سیگنال‌های لحظه‌ای فعال',
-      lastUpdateTime: 'آخرین به‌روزرسانی',
-      live: 'زنده',
-      allSymbols: 'همه نمادها'
-    }
+    title: 'سیگنال‌های معاملاتی',
+    subtitle: 'سیگنال‌های معاملاتی ارزهای دیجیتال با هوش مصنوعی',
+    refresh: 'به‌روزرسانی سیگنال‌ها',
+    allSignals: 'همه سیگنال‌ها',
+    buySignals: 'سیگنال‌های خرید',
+    sellSignals: 'سیگنال‌های فروش',
+    highConfidence: 'اطمینان بالا',
+    statistics: 'آمار سیگنال‌ها',
+    totalSignals: 'کل سیگنال‌ها',
+    buyCount: 'سیگنال خرید',
+    sellCount: 'سیگنال فروش',
+    holdCount: 'نگهداری',
+    waitCount: 'انتظار',
+    highConfidenceCount: 'اطمینان بالا',
+    symbol: 'نماد',
+    signal: 'سیگنال',
+    confidence: 'اطمینان',
+    action: 'عملیات',
+    reasons: 'تحلیل',
+    entryPrice: 'قیمت ورود',
+    stopLoss: 'حد ضرر',
+    takeProfit: 'هدف سود',
+    riskReward: 'ریسک/سود',
+    lastUpdate: 'آخرین به‌روزرسانی',
+    trading: 'معاملات',
+    moreReasons: 'مورد دیگر',
+    entryLabel: 'ورود',
+    stopLossLabel: 'ضرر',
+    takeProfitLabel: 'سود',
+    liveSignals: 'سیگنال‌های لحظه‌ای فعال',
+    lastUpdateTime: 'آخرین به‌روزرسانی',
+    live: 'زنده',
+    allSymbols: 'همه نمادها'
   };
 
-  const t = texts[language];
-  const isRTL = language === 'fa';
+  const t = texts;
+  const isRTL = true;
 
   const filterSignals = (filterType: string) => {
     let filteredSignals = signals;
@@ -424,7 +386,7 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-sm font-medium">
-                {t.liveSignals} - {t.lastUpdateTime}: {new Date().toLocaleTimeString(language === 'fa' ? 'fa-IR' : 'en-US')}
+                {t.liveSignals} - {t.lastUpdateTime}: {new Date().toLocaleTimeString('fa-IR')}
               </span>
             </div>
             <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-300">

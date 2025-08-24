@@ -13,7 +13,6 @@ import {
   LogOut, 
   Moon, 
   Sun, 
-  Globe,
   Bell,
   User,
   Wifi,
@@ -32,7 +31,6 @@ interface DashboardProps {
 
 const Dashboard = ({ onLogout }: DashboardProps) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [language, setLanguage] = useState<'en' | 'fa'>('en');
   const [isOnline, setIsOnline] = useState(navigator.onLine);
   const { theme, setTheme } = useTheme();
   const navigate = useNavigate();
@@ -53,31 +51,18 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   }, []);
 
   const texts = {
-    en: {
-      dashboard: 'Dashboard',
-      signals: 'Trading Signals',
-      news: 'News & Analysis',
-      analysis: 'Technical Analysis',
-      settings: 'Settings',
-      logout: 'Logout',
-      online: 'Online',
-      offline: 'Offline',
-      notifications: 'Notifications'
-    },
-    fa: {
-      dashboard: 'داشبورد',
-      signals: 'سیگنال‌های معاملاتی',
-      news: 'اخبار و تحلیل',
-      analysis: 'تحلیل تکنیکال',
-      settings: 'تنظیمات',
-      logout: 'خروج',
-      online: 'آنلاین',
-      offline: 'آفلاین',
-      notifications: 'اعلان‌ها'
-    }
+    dashboard: 'داشبورد',
+    signals: 'سیگنال‌های معاملاتی',
+    news: 'اخبار و تحلیل',
+    analysis: 'تحلیل تکنیکال',
+    settings: 'تنظیمات',
+    logout: 'خروج',
+    online: 'آنلاین',
+    offline: 'آفلاین',
+    notifications: 'اعلان‌ها'
   };
 
-  const t = texts[language];
+  const t = texts;
 
   const menuItems = [
     { path: '/dashboard', icon: Home, label: t.dashboard },
@@ -96,10 +81,6 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
 
   const toggleTheme = () => {
     setTheme(theme === 'dark' ? 'light' : 'dark');
-  };
-
-  const toggleLanguage = () => {
-    setLanguage(language === 'en' ? 'fa' : 'en');
   };
 
   const SidebarContent = () => (
@@ -124,15 +105,13 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             <Button
               key={item.path}
               variant={isActive ? 'default' : 'ghost'}
-              className={`w-full justify-between gap-3 cursor-pointer hover:cursor-pointer ${
-                language === 'fa' ? 'flex-row-reverse' : ''
-              }`}
+              className="w-full justify-between gap-3 cursor-pointer hover:cursor-pointer flex-row-reverse"
               onClick={() => {
                 navigate(item.path);
                 setIsMobileMenuOpen(false);
               }}
             >
-              <span className={`flex-1 ${language === 'fa' ? 'text-right' : 'text-left'}`}>{item.label}</span>
+              <span className="flex-1 text-right">{item.label}</span>
               <Icon className="h-5 w-5 flex-shrink-0" />
             </Button>
           );
@@ -145,35 +124,19 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           variant="outline"
           size="sm"
           onClick={toggleTheme}
-          className={`w-full justify-between gap-3 cursor-pointer hover:cursor-pointer ${
-            language === 'fa' ? 'flex-row-reverse' : ''
-          }`}
+          className="w-full justify-between gap-3 cursor-pointer hover:cursor-pointer flex-row-reverse"
         >
-          <span className={`flex-1 ${language === 'fa' ? 'text-right' : 'text-left'}`}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+          <span className="flex-1 text-right">{theme === 'dark' ? 'روشن' : 'تاریک'}</span>
           {theme === 'dark' ? <Sun className="h-4 w-4 flex-shrink-0" /> : <Moon className="h-4 w-4 flex-shrink-0" />}
-        </Button>
-        
-        <Button
-          variant="outline"
-          size="sm"
-          onClick={toggleLanguage}
-          className={`w-full justify-between gap-3 cursor-pointer hover:cursor-pointer ${
-            language === 'fa' ? 'flex-row-reverse' : ''
-          }`}
-        >
-          <span className={`flex-1 ${language === 'fa' ? 'text-right' : 'text-left'}`}>{language === 'en' ? 'فارسی' : 'English'}</span>
-          <Globe className="h-4 w-4 flex-shrink-0" />
         </Button>
 
         <Button
           variant="outline"
           size="sm"
           onClick={handleLogout}
-          className={`w-full justify-between gap-3 cursor-pointer hover:cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 ${
-            language === 'fa' ? 'flex-row-reverse' : ''
-          }`}
+          className="w-full justify-between gap-3 cursor-pointer hover:cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 flex-row-reverse"
         >
-          <span className={`flex-1 ${language === 'fa' ? 'text-right' : 'text-left'}`}>{t.logout}</span>
+          <span className="flex-1 text-right">{t.logout}</span>
           <LogOut className="h-4 w-4 flex-shrink-0" />
         </Button>
       </div>
@@ -181,9 +144,9 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   );
 
   return (
-    <div className={`flex h-screen w-screen bg-background overflow-hidden ${language === 'fa' ? 'fa-lang' : 'en-lang'}`} dir={language === 'fa' ? 'rtl' : 'ltr'}>
+    <div className="flex h-screen w-screen bg-background overflow-hidden fa-lang" dir="rtl">
       {/* Desktop Sidebar */}
-      <div className={`hidden lg:flex lg:w-64 lg:flex-col ${language === 'fa' ? 'lg:border-l lg:border-border' : 'lg:border-r lg:border-border'}`}>
+      <div className="hidden lg:flex lg:w-64 lg:flex-col lg:border-l lg:border-border">
         <SidebarContent />
       </div>
 
@@ -200,7 +163,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side={language === 'fa' ? 'right' : 'left'} className="p-0 w-64">
+                <SheetContent side="right" className="p-0 w-64">
                   <SidebarContent />
                 </SheetContent>
               </Sheet>
@@ -235,11 +198,11 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
         {/* Page Content */}
         <main className="flex-1 overflow-auto custom-scrollbar min-h-0">
           <Routes>
-            <Route path="/" element={<DashboardHome language={language} />} />
-            <Route path="/signals" element={<Signals language={language} />} />
-            <Route path="/news" element={<News language={language} />} />
-            <Route path="/analysis" element={<Analysis language={language} />} />
-            <Route path="/settings" element={<SettingsPage language={language} />} />
+            <Route path="/" element={<DashboardHome />} />
+            <Route path="/signals" element={<Signals />} />
+            <Route path="/news" element={<News />} />
+            <Route path="/analysis" element={<Analysis />} />
+            <Route path="/settings" element={<SettingsPage />} />
           </Routes>
         </main>
 

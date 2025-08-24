@@ -1,29 +1,15 @@
-interface NewsProps {
-  language: 'en' | 'fa';
-}
-
-const News = ({ language }: NewsProps) => {
-  const isRTL = language === 'fa';
-
+const News = () => {
   const texts = {
-    en: {
-      title: 'Cryptocurrency News',
-      subtitle: 'Latest news and updates from the crypto world',
-      comingSoon: 'Coming Soon',
-      description: 'News section is under development. Stay tuned for the latest cryptocurrency news and market updates.'
-    },
-    fa: {
-      title: 'اخبار ارزهای دیجیتال',
-      subtitle: 'آخرین اخبار و به‌روزرسانی‌های دنیای کریپتو',
-      comingSoon: 'به زودی',
-      description: 'بخش اخبار در حال توسعه است. منتظر آخرین اخبار ارزهای دیجیتال و به‌روزرسانی‌های بازار باشید.'
-    }
+    title: 'اخبار ارزهای دیجیتال',
+    subtitle: 'آخرین اخبار و به‌روزرسانی‌های دنیای کریپتو',
+    comingSoon: 'به زودی',
+    description: 'بخش اخبار در حال توسعه است. منتظر آخرین اخبار ارزهای دیجیتال و به‌روزرسانی‌های بازار باشید.'
   };
 
-  const t = texts[language];
+  const t = texts;
 
   return (
-    <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="p-6 space-y-6 text-right" dir="rtl">
       {/* Header */}
       <div className="space-y-1">
         <h1 className="text-3xl font-bold">{t.title}</h1>

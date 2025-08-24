@@ -9,10 +9,6 @@ import { getCryptoService, type CryptoServiceName } from '@/services';
 import { cryptoDataManager } from '@/services/cryptoDataManager';
 import type { CryptocurrencyData } from '@/services/cryptoTypes';
 
-interface DashboardHomeProps {
-  language: 'en' | 'fa';
-}
-
 // Crypto Icon Component with multiple fallbacks
 const CryptoIcon = ({ symbol }: { symbol: string }) => {
   const [iconError, setIconError] = useState(0);
@@ -71,7 +67,7 @@ const CryptoIcon = ({ symbol }: { symbol: string }) => {
   );
 };
 
-const DashboardHome = ({ language }: DashboardHomeProps) => {
+const DashboardHome = () => {
   // Load settings from localStorage
   const [cryptoSymbols, setCryptoSymbols] = useState<string[]>(() => {
     try {
@@ -262,44 +258,25 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
   };
 
   const texts = {
-    en: {
-      title: 'Cryptocurrency Market',
-      subtitle: `Real-time data from ${getCryptoService(selectedService).name}`,
-      refresh: 'Refresh',
-      symbol: 'Symbol',
-      name: 'Name',
-      price: 'Price',
-      change: '24h Change',
-      marketCap: 'Market Cap',
-      volume: '24h Volume',
-      noData: 'No cryptocurrency data available',
-      configureSymbols: 'Configure symbols in Settings',
-      loading: 'Loading cryptocurrency data...',
-      error: 'Error loading data',
-      wsConnected: 'Real-time updates active',
-      wsDisconnected: 'Real-time updates inactive'
-    },
-    fa: {
-      title: 'بازار ارزهای دیجیتال',
-      subtitle: `داده‌های لحظه‌ای از ${getCryptoService(selectedService).name}`,
-      refresh: 'بروزرسانی',
-      symbol: 'نماد',
-      name: 'نام',
-      price: 'قیمت',
-      change: 'تغییر ۲۴ ساعته',
-      marketCap: 'ارزش بازار',
-      volume: 'حجم ۲۴ ساعته',
-      noData: 'داده‌ای از ارزهای دیجیتال در دسترس نیست',
-      configureSymbols: 'نمادها را در تنظیمات پیکربندی کنید',
-      loading: 'بارگذاری داده‌های ارز دیجیتال...',
-      error: 'خطا در بارگذاری داده‌ها',
-      wsConnected: 'به‌روزرسانی‌های لحظه‌ای فعال',
-      wsDisconnected: 'به‌روزرسانی‌های لحظه‌ای غیرفعال'
-    }
+    title: 'بازار ارزهای دیجیتال',
+    subtitle: `داده‌های لحظه‌ای از ${getCryptoService(selectedService).name}`,
+    refresh: 'بروزرسانی',
+    symbol: 'نماد',
+    name: 'نام',
+    price: 'قیمت',
+    change: 'تغییر ۲۴ ساعته',
+    marketCap: 'ارزش بازار',
+    volume: 'حجم ۲۴ ساعته',
+    noData: 'داده‌ای از ارزهای دیجیتال در دسترس نیست',
+    configureSymbols: 'نمادها را در تنظیمات پیکربندی کنید',
+    loading: 'بارگذاری داده‌های ارز دیجیتال...',
+    error: 'خطا در بارگذاری داده‌ها',
+    wsConnected: 'به‌روزرسانی‌های لحظه‌ای فعال',
+    wsDisconnected: 'به‌روزرسانی‌های لحظه‌ای غیرفعال'
   };
 
-  const t = texts[language];
-  const isRTL = language === 'fa';
+  const t = texts;
+  const isRTL = true;
 
   if (loading) {
     return (

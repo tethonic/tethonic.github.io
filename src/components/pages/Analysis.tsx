@@ -3,28 +3,16 @@ import TechnicalAnalysisComponent from '@/components/TechnicalAnalysis';
 import { cryptoDataManager } from '@/services/cryptoDataManager';
 import type { CryptocurrencyData } from '@/services/cryptoTypes';
 
-interface AnalysisProps {
-  language: 'en' | 'fa';
-}
-
-const Analysis = ({ language }: AnalysisProps) => {
+const Analysis = () => {
   const [cryptoData, setCryptoData] = useState<CryptocurrencyData[]>([]);
   const [loading, setLoading] = useState(true);
 
-  const isRTL = language === 'fa';
-
   const texts = {
-    en: {
-      loading: 'Loading technical analysis...',
-      error: 'Error loading analysis data'
-    },
-    fa: {
-      loading: 'در حال بارگذاری تحلیل تکنیکال...',
-      error: 'خطا در بارگذاری داده‌های تحلیل'
-    }
+    loading: 'بارگذاری تحلیل تکنیکال...',
+    error: 'خطا در بارگذاری داده‌های تحلیل'
   };
 
-  const t = texts[language];
+  const t = texts;
 
   // Load crypto data for analysis
   useEffect(() => {
@@ -62,8 +50,8 @@ const Analysis = ({ language }: AnalysisProps) => {
   }
 
   return (
-    <div className={`${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
-      <TechnicalAnalysisComponent language={language} cryptoData={cryptoData} />
+    <div className="text-right" dir="rtl">
+      <TechnicalAnalysisComponent language="fa" cryptoData={cryptoData} />
     </div>
   );
 };

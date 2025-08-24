@@ -5,33 +5,21 @@ import type { CryptocurrencyData } from '@/services/cryptoTypes';
 import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 
-interface SignalsProps {
-  language: 'en' | 'fa';
-}
-
-const Signals = ({ language }: SignalsProps) => {
+const Signals = () => {
   const [cryptoData, setCryptoData] = useState<CryptocurrencyData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  const isRTL = language === 'fa';
+  const isRTL = true;
 
   const texts = {
-    en: {
-      loading: 'Loading trading signals...',
-      noSymbols: 'Please add cryptocurrency symbols in Settings first',
-      error: 'Error loading data',
-      retry: 'Retry'
-    },
-    fa: {
-      loading: 'در حال بارگذاری سیگنال‌های معاملاتی...',
-      noSymbols: 'لطفاً ابتدا نمادهای ارز را در تنظیمات اضافه کنید',
-      error: 'خطا در بارگذاری داده‌ها',
-      retry: 'تلاش مجدد'
-    }
+    loading: 'در حال بارگذاری سیگنال‌های معاملاتی...',
+    noSymbols: 'لطفاً ابتدا نمادهای ارز را در تنظیمات اضافه کنید',
+    error: 'خطا در بارگذاری داده‌ها',
+    retry: 'تلاش مجدد'
   };
 
-  const t = texts[language];
+  const t = texts;
 
   useEffect(() => {
     const fetchCryptoData = async () => {
@@ -70,7 +58,7 @@ const Signals = ({ language }: SignalsProps) => {
     // Refresh data every 5 minutes
     const interval = setInterval(fetchCryptoData, 5 * 60 * 1000);
     return () => clearInterval(interval);
-  }, [language]);
+  }, []);
 
   if (loading) {
     return (
@@ -141,9 +129,8 @@ const Signals = ({ language }: SignalsProps) => {
   }
 
   return (
-    <div className={`${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+    <div className="text-right" dir="rtl">
       <TradingSignalsComponent 
-        language={language} 
         cryptoData={cryptoData}
       />
     </div>

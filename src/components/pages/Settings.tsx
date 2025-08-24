@@ -35,11 +35,7 @@ import { useTheme } from '@/components/ThemeProvider';
 import { toast } from 'sonner';
 import { getAvailableServices, type CryptoServiceName } from '@/services';
 
-interface SettingsPageProps {
-  language: 'en' | 'fa';
-}
-
-const SettingsPage = ({ language }: SettingsPageProps) => {
+const SettingsPage = () => {
   const { theme, setTheme } = useTheme();
   
   // Load settings from localStorage
@@ -69,7 +65,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
     return saved?.profile || {
       username: 'admin',
       email: 'admin@tethonic.com',
-      language: language,
+      language: 'fa',
       timezone: 'utc'
     };
   });
@@ -142,9 +138,9 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
         if (backup.theme) setTheme(backup.theme);
         
         saveToLocalStorage();
-        toast.success(language === 'en' ? 'Backup restored successfully' : 'بک‌آپ با موفقیت بازیابی شد');
+        toast.success('بک‌آپ با موفقیت بازیابی شد');
       } catch {
-        toast.error(language === 'en' ? 'Invalid backup file' : 'فایل بک‌آپ نامعتبر');
+        toast.error('فایل بک‌آپ نامعتبر');
       }
     };
     reader.readAsText(file);
@@ -172,7 +168,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
     document.body.removeChild(a);
     URL.revokeObjectURL(url);
     
-    toast.success(language === 'en' ? 'Backup exported successfully' : 'بک‌آپ با موفقیت ذخیره شد');
+    toast.success('بک‌آپ با موفقیت ذخیره شد');
   };
 
   // Auto-save settings when they change
@@ -285,8 +281,8 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
     }
   };
 
-  const t = texts[language];
-  const isRTL = language === 'fa';
+  const t = texts.fa;
+  const isRTL = true;
 
   // Handler functions
   const handleNotificationChange = (key: string, value: boolean) => {
@@ -299,11 +295,11 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
 
   const handlePasswordChange = () => {
     if (!passwordData.currentPassword || !passwordData.newPassword) {
-      toast.error(language === 'en' ? 'Please fill all password fields' : 'لطفاً تمام فیلدهای رمز عبور را پر کنید');
+      toast.error('لطفاً تمام فیلدهای رمز عبور را پر کنید');
       return;
     }
     if (passwordData.newPassword !== passwordData.confirmPassword) {
-      toast.error(language === 'en' ? 'Passwords do not match' : 'رمزهای عبور مطابقت ندارند');
+      toast.error('رمزهای عبور مطابقت ندارند');
       return;
     }
     
@@ -311,31 +307,31 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
     setTimeout(() => {
       setIsChangingPassword(false);
       setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
-      toast.success(language === 'en' ? 'Password changed successfully' : 'رمز عبور با موفقیت تغییر کرد');
+      toast.success('رمز عبور با موفقیت تغییر کرد');
     }, 1000);
   };
 
   const handleAddSymbol = () => {
     if (!newSymbol.trim()) {
-      toast.error(language === 'en' ? 'Please enter a symbol' : 'لطفاً نماد ارز را وارد کنید');
+      toast.error('لطفاً نماد ارز را وارد کنید');
       return;
     }
     
     const symbol = newSymbol.trim().toUpperCase();
     if (cryptoSymbols.includes(symbol)) {
-      toast.error(language === 'en' ? 'Symbol already exists' : 'این نماد قبلاً اضافه شده');
+      toast.error('این نماد قبلاً اضافه شده');
       return;
     }
     
     setCryptoSymbols(prev => [...prev, symbol]);
     setNewSymbol('');
     setNewSymbolDialog(false);
-    toast.success(language === 'en' ? 'Symbol added successfully' : 'نماد با موفقیت اضافه شد');
+    toast.success('نماد با موفقیت اضافه شد');
   };
 
   const handleRemoveSymbol = (symbol: string) => {
     setCryptoSymbols(prev => prev.filter(s => s !== symbol));
-    toast.success(language === 'en' ? 'Symbol removed successfully' : 'نماد با موفقیت حذف شد');
+    toast.success('نماد با موفقیت حذف شد');
   };
 
   return (
@@ -551,10 +547,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
               <div className="space-y-4">
                 <div className="space-y-2">
                   <Label>
-                    {language === 'en' 
-                      ? 'Select crypto data provider:'
-                      : 'انتخاب ارائه‌دهنده داده‌های ارز:'
-                    }
+                    {'انتخاب ارائه‌دهنده داده‌های ارز:'}
                   </Label>
                   <Select value={selectedCryptoService} onValueChange={(value: CryptoServiceName) => setSelectedCryptoService(value)}>
                     <SelectTrigger>
@@ -577,10 +570,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
                   </Select>
                 </div>
                 <p className="text-sm text-muted-foreground">
-                  {language === 'en' 
-                    ? 'Choose your preferred cryptocurrency data provider. WebSocket enabled services provide real-time updates.'
-                    : 'ارائه‌دهنده داده‌های ارز دیجیتال مورد نظر خود را انتخاب کنید. سرویس‌های دارای WebSocket به‌روزرسانی‌های لحظه‌ای ارائه می‌دهند.'
-                  }
+                  {'ارائه‌دهنده داده‌های ارز دیجیتال مورد نظر خود را انتخاب کنید. سرویس‌های دارای WebSocket به‌روزرسانی‌های لحظه‌ای ارائه می‌دهند.'}
                 </p>
               </div>
             </CardContent>
@@ -597,10 +587,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
             <CardContent className="space-y-6">
               <div className="flex justify-between items-center">
                 <p className="text-sm text-muted-foreground">
-                  {language === 'en' 
-                    ? 'Add cryptocurrency symbols to track in your dashboard'
-                    : 'نمادهای ارز دیجیتال برای نمایش در داشبورد اضافه کنید'
-                  }
+                  {'نمادهای ارز دیجیتال برای نمایش در داشبورد اضافه کنید'}
                 </p>
                 <Dialog open={newSymbolDialog} onOpenChange={setNewSymbolDialog}>
                   <DialogTrigger asChild>
@@ -613,10 +600,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
                     <DialogHeader>
                       <DialogTitle>{t.addSymbol}</DialogTitle>
                       <DialogDescription>
-                        {language === 'en' 
-                          ? 'Enter the symbol of the cryptocurrency you want to track'
-                          : 'نماد ارز دیجیتالی که می‌خواهید دنبال کنید را وارد کنید'
-                        }
+                        {'نماد ارز دیجیتالی که می‌خواهید دنبال کنید را وارد کنید'}
                       </DialogDescription>
                     </DialogHeader>
                     <div className="space-y-4">
@@ -665,10 +649,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
               
               {cryptoSymbols.length === 0 && (
                 <div className="text-center py-8 text-muted-foreground">
-                  {language === 'en' 
-                    ? 'No symbols added yet. Click "Add Symbol" to get started.'
-                    : 'هنوز نمادی اضافه نشده. روی "افزودن نماد" کلیک کنید.'
-                  }
+                  {'هنوز نمادی اضافه نشده. روی "افزودن نماد" کلیک کنید.'}
                 </div>
               )}
             </CardContent>
