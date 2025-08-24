@@ -1,9 +1,9 @@
 {
-  "name": "Tethonic - Digital Currency Analysis Platform",
+  "name": "Tethonic - Crypto Currency Analysis Platform",
   "short_name": "Tethonic",
   "start_url": "/",
   "display": "standalone",
-  "description": "Professional bilingual digital currency analysis platform with technical indicators, fundamental news analysis, and trading signals",
+  "description": "Professional Crypto Currency analysis platform with technical indicators, fundamental news analysis, and trading signals",
   "lang": "en",
   "dir": "auto",
   "theme_color": "#7c3aed",
