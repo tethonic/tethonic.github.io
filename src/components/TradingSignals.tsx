@@ -159,68 +159,17 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
       <table className="w-full">
         <thead>
           <tr className="border-b">
-            <th className="py-3 px-4 text-right font-medium">{t.symbol}</th>
-            <th className="py-3 px-4 text-right font-medium">{t.signal}</th>
-            <th className="py-3 px-4 text-right font-medium">{t.confidence}</th>
-            <th className="py-3 px-4 text-right font-medium">{t.action}</th>
-            <th className="py-3 px-4 text-right font-medium">{t.reasons}</th>
             <th className="py-3 px-4 text-right font-medium">{t.trading}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.reasons}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.action}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.confidence}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.signal}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.symbol}</th>
           </tr>
         </thead>
         <tbody>
           {filteredSignals.map((signalData) => (
             <tr key={signalData.symbol} className="border-b hover:bg-muted/50">
-              <td className="py-3 px-4 text-right">
-                <div className="flex items-center gap-2 justify-end">
-                  <span className="font-medium">{signalData.symbol}</span>
-                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold">
-                    {signalData.symbol.slice(0, 2)}
-                  </div>
-                </div>
-              </td>
-              <td className="py-3 px-4 text-right">
-                <div className="flex justify-end">
-                  <Badge className={getSignalColor(signalData.signal)}>
-                    {signalData.signal}
-                  </Badge>
-                </div>
-              </td>
-              <td className="py-3 px-4 text-right">
-                <div className="flex items-center gap-2 justify-end">
-                  <span className="text-sm font-medium min-w-[3rem] text-left">{signalData.confidence}%</span>
-                  <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 relative">
-                    <div 
-                      className={`h-2 rounded-full transition-all duration-300 ${
-                        signalData.confidence >= 70 ? 'bg-green-600' :
-                        signalData.confidence >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-                      } ${getProgressWidthClass(signalData.confidence)}`}
-                    ></div>
-                  </div>
-                </div>
-              </td>
-              <td className="py-3 px-4 text-right">
-                <div className={`flex items-center gap-1 justify-end ${getActionColor(signalData.action)}`}>
-                  <span className="font-medium">{getActionText(signalData.action)}</span>
-                  {signalData.action === 'BUY' && <TrendingUp className="h-4 w-4" />}
-                  {signalData.action === 'SELL' && <TrendingDown className="h-4 w-4" />}
-                  {signalData.action === 'HOLD' && <Activity className="h-4 w-4" />}
-                  {signalData.action === 'WAIT' && <Clock className="h-4 w-4" />}
-                </div>
-              </td>
-              <td className="py-3 px-4 text-right">
-                <div className="text-sm space-y-1 max-w-xs text-right">
-                  {signalData.reason.slice(0, 2).map((reason, idx) => (
-                    <div key={idx} className="text-muted-foreground truncate">
-                      {reason} •
-                    </div>
-                  ))}
-                  {signalData.reason.length > 2 && (
-                    <div className="text-xs text-muted-foreground">
-                      {t.moreReasons} {signalData.reason.length - 2}+
-                    </div>
-                  )}
-                </div>
-              </td>
               <td className="py-3 px-4 text-right">
                 {signalData.entry_price && (
                   <div className="text-xs space-y-1">
@@ -247,6 +196,57 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
                     )}
                   </div>
                 )}
+              </td>
+              <td className="py-3 px-4 text-right">
+                <div className="text-sm space-y-1 max-w-xs text-right">
+                  {signalData.reason.slice(0, 2).map((reason, idx) => (
+                    <div key={idx} className="text-muted-foreground truncate">
+                      {reason} •
+                    </div>
+                  ))}
+                  {signalData.reason.length > 2 && (
+                    <div className="text-xs text-muted-foreground">
+                      {t.moreReasons} {signalData.reason.length - 2}+
+                    </div>
+                  )}
+                </div>
+              </td>
+              <td className="py-3 px-4 text-right">
+                <div className={`flex items-center gap-1 justify-end ${getActionColor(signalData.action)}`}>
+                  <span className="font-medium">{getActionText(signalData.action)}</span>
+                  {signalData.action === 'BUY' && <TrendingUp className="h-4 w-4" />}
+                  {signalData.action === 'SELL' && <TrendingDown className="h-4 w-4" />}
+                  {signalData.action === 'HOLD' && <Activity className="h-4 w-4" />}
+                  {signalData.action === 'WAIT' && <Clock className="h-4 w-4" />}
+                </div>
+              </td>
+              <td className="py-3 px-4 text-right">
+                <div className="flex items-center gap-2 justify-end">
+                  <span className="text-sm font-medium min-w-[3rem] text-left">{signalData.confidence}%</span>
+                  <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 relative">
+                    <div 
+                      className={`h-2 rounded-full transition-all duration-300 ${
+                        signalData.confidence >= 70 ? 'bg-green-600' :
+                        signalData.confidence >= 50 ? 'bg-yellow-500' : 'bg-red-500'
+                      } ${getProgressWidthClass(signalData.confidence)}`}
+                    ></div>
+                  </div>
+                </div>
+              </td>
+              <td className="py-3 px-4 text-right">
+                <div className="flex justify-end">
+                  <Badge className={getSignalColor(signalData.signal)}>
+                    {signalData.signal}
+                  </Badge>
+                </div>
+              </td>
+              <td className="py-3 px-4 text-right">
+                <div className="flex items-center gap-2 justify-end">
+                  <span className="font-medium">{signalData.symbol}</span>
+                  <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold">
+                    {signalData.symbol.slice(0, 2)}
+                  </div>
+                </div>
               </td>
             </tr>
           ))}
