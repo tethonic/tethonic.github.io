@@ -103,7 +103,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   };
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full" dir="ltr">
+    <div className="flex flex-col h-full">
       {/* Logo */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
@@ -124,16 +124,16 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             <Button
               key={item.path}
               variant={isActive ? 'default' : 'ghost'}
-              className={`w-full justify-start gap-3 cursor-pointer hover:cursor-pointer ${
-                language === 'fa' ? 'text-right' : ''
+              className={`w-full justify-between gap-3 cursor-pointer hover:cursor-pointer ${
+                language === 'fa' ? 'flex-row-reverse' : ''
               }`}
               onClick={() => {
                 navigate(item.path);
                 setIsMobileMenuOpen(false);
               }}
             >
+              <span className={`flex-1 ${language === 'fa' ? 'text-right' : 'text-left'}`}>{item.label}</span>
               <Icon className="h-5 w-5 flex-shrink-0" />
-              <span className="flex-1">{item.label}</span>
             </Button>
           );
         })}
@@ -145,30 +145,36 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
           variant="outline"
           size="sm"
           onClick={toggleTheme}
-          className="w-full justify-start gap-3 cursor-pointer hover:cursor-pointer"
+          className={`w-full justify-between gap-3 cursor-pointer hover:cursor-pointer ${
+            language === 'fa' ? 'flex-row-reverse' : ''
+          }`}
         >
-          {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
-          {theme === 'dark' ? 'Light' : 'Dark'}
+          <span className={`flex-1 ${language === 'fa' ? 'text-right' : 'text-left'}`}>{theme === 'dark' ? 'Light' : 'Dark'}</span>
+          {theme === 'dark' ? <Sun className="h-4 w-4 flex-shrink-0" /> : <Moon className="h-4 w-4 flex-shrink-0" />}
         </Button>
         
         <Button
           variant="outline"
           size="sm"
           onClick={toggleLanguage}
-          className="w-full justify-start gap-3 cursor-pointer hover:cursor-pointer"
+          className={`w-full justify-between gap-3 cursor-pointer hover:cursor-pointer ${
+            language === 'fa' ? 'flex-row-reverse' : ''
+          }`}
         >
-          <Globe className="h-4 w-4" />
-          {language === 'en' ? 'فارسی' : 'English'}
+          <span className={`flex-1 ${language === 'fa' ? 'text-right' : 'text-left'}`}>{language === 'en' ? 'فارسی' : 'English'}</span>
+          <Globe className="h-4 w-4 flex-shrink-0" />
         </Button>
 
         <Button
           variant="outline"
           size="sm"
           onClick={handleLogout}
-          className="w-full justify-start gap-3 cursor-pointer hover:cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950"
+          className={`w-full justify-between gap-3 cursor-pointer hover:cursor-pointer text-red-600 hover:text-red-700 hover:bg-red-50 dark:hover:bg-red-950 ${
+            language === 'fa' ? 'flex-row-reverse' : ''
+          }`}
         >
-          <LogOut className="h-4 w-4" />
-          {t.logout}
+          <span className={`flex-1 ${language === 'fa' ? 'text-right' : 'text-left'}`}>{t.logout}</span>
+          <LogOut className="h-4 w-4 flex-shrink-0" />
         </Button>
       </div>
     </div>
