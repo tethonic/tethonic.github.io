@@ -79,10 +79,24 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
     confirmPassword: ''
   });
 
+  // Top 100 Binance cryptocurrencies as default
+  const defaultCryptoSymbols = [
+    'BTC', 'ETH', 'BNB', 'SOL', 'XRP', 'DOGE', 'ADA', 'TRX', 'AVAX', 'SHIB',
+    'DOT', 'LINK', 'BCH', 'NEAR', 'MATIC', 'ICP', 'UNI', 'LTC', 'XLM', 'ETC',
+    'ATOM', 'HBAR', 'FIL', 'APT', 'LDO', 'VET', 'ARB', 'TAO', 'MNT', 'IMX',
+    'INJ', 'OP', 'RENDER', 'SEI', 'WIF', 'STX', 'SUI', 'AAVE', 'GRT', 'THETA',
+    'RUNE', 'FTM', 'BONK', 'PEPE', 'ALGO', 'FLOW', 'EGLD', 'MANA', 'SAND', 'XTZ',
+    'BEAM', 'AXS', 'CHZ', 'DYDX', 'KAS', 'ROSE', 'GALA', 'ENS', 'BLUR', 'GMT',
+    'CFX', 'CRV', 'ORDI', 'COMP', 'PYTH', 'SUPER', 'WLD', 'SATS', 'PENDLE', 'FET',
+    'JASMY', 'OCEAN', 'JTO', 'CAKE', 'TIA', 'JUP', 'STRK', 'MEME', 'BOME', 'ENA',
+    'WOO', 'RNDR', 'FLOKI', 'PEOPLE', 'AGIX', 'ARKM', 'KAVA', 'WAVES', 'ZIL', 'AR',
+    'LUNC', 'ONE', 'QTUM', 'ZEC', 'DASH', 'NEO', 'IOST', 'ZEN', 'TFUEL', 'IOTX'
+  ];
+
   // Cryptocurrencies symbols only
   const [cryptoSymbols, setCryptoSymbols] = useState<string[]>(() => {
     const saved = loadSettings();
-    return saved?.cryptoSymbols || ['BTC', 'ETH', 'BNB', 'ADA', 'SOL'];
+    return saved?.cryptoSymbols || defaultCryptoSymbols;
   });
 
   // Dialog states
