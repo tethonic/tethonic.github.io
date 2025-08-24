@@ -5,126 +5,73 @@ import {
   TrendingUp, 
   RefreshCw
 } from 'lucide-react';
+import { getCryptoService, type CryptoServiceName } from '@/services';
+import type { CryptocurrencyData } from '@/services/cryptoTypes';
 
 interface DashboardHomeProps {
   language: 'en' | 'fa';
 }
 
-interface CryptocurrencyData {
-  symbol: string;
-  name: string;
-  price: number;
-  change: number;
-  marketCap: number;
-  volume: number;
-}
+// Crypto Icon Component with multiple fallbacks
+const CryptoIcon = ({ symbol }: { symbol: string }) => {
+  const [iconError, setIconError] = useState(0);
+  
+  // Define colors for major cryptocurrencies
+  const cryptoColors: Record<string, { from: string; to: string }> = {
+    'BTC': { from: 'from-orange-400', to: 'to-orange-600' },
+    'ETH': { from: 'from-blue-400', to: 'to-indigo-600' },
+    'BNB': { from: 'from-yellow-400', to: 'to-yellow-600' },
+    'SOL': { from: 'from-purple-400', to: 'to-purple-600' },
+    'XRP': { from: 'from-blue-500', to: 'to-blue-700' },
+    'ADA': { from: 'from-blue-400', to: 'to-blue-600' },
+    'DOGE': { from: 'from-yellow-400', to: 'to-yellow-600' },
+    'MATIC': { from: 'from-purple-500', to: 'to-indigo-600' },
+    'DOT': { from: 'from-pink-400', to: 'to-pink-600' },
+    'SHIB': { from: 'from-orange-400', to: 'to-red-500' },
+    'AVAX': { from: 'from-red-400', to: 'to-red-600' },
+    'UNI': { from: 'from-pink-400', to: 'to-purple-600' },
+    'LINK': { from: 'from-blue-400', to: 'to-blue-600' },
+    'ATOM': { from: 'from-purple-400', to: 'to-purple-600' },
+    'LTC': { from: 'from-gray-400', to: 'to-gray-600' },
+    'BCH': { from: 'from-green-400', to: 'to-green-600' },
+    'TRX': { from: 'from-red-400', to: 'to-red-600' }
+  };
+  
+  const iconSources = [
+    `https://cdn.jsdelivr.net/gh/atomiclabs/cryptocurrency-icons@1a63530be6e374711a8554f31b17e4cb92c25fa5/32/color/${symbol.toLowerCase()}.png`,
+    `https://raw.githubusercontent.com/spothq/cryptocurrency-icons/master/32/color/${symbol.toLowerCase()}.png`,
+    `https://cryptoicons.org/api/icon/${symbol.toLowerCase()}/32`,
+    null // Fallback to styled text
+  ];
 
-const DashboardHome = ({ language }: DashboardHomeProps) => {
-  // Crypto symbol to name mapping
-  const cryptoNames: { [key: string]: string } = {
-    'BTC': 'Bitcoin',
-    'ETH': 'Ethereum', 
-    'BNB': 'BNB',
-    'SOL': 'Solana',
-    'XRP': 'XRP',
-    'DOGE': 'Dogecoin',
-    'ADA': 'Cardano',
-    'TRX': 'TRON',
-    'AVAX': 'Avalanche',
-    'SHIB': 'Shiba Inu',
-    'DOT': 'Polkadot',
-    'LINK': 'Chainlink',
-    'BCH': 'Bitcoin Cash',
-    'NEAR': 'NEAR Protocol',
-    'MATIC': 'Polygon',
-    'ICP': 'Internet Computer',
-    'UNI': 'Uniswap',
-    'LTC': 'Litecoin',
-    'XLM': 'Stellar',
-    'ETC': 'Ethereum Classic',
-    'ATOM': 'Cosmos',
-    'HBAR': 'Hedera',
-    'FIL': 'Filecoin',
-    'APT': 'Aptos',
-    'LDO': 'Lido DAO',
-    'VET': 'VeChain',
-    'ARB': 'Arbitrum',
-    'TAO': 'Bittensor',
-    'MNT': 'Mantle',
-    'IMX': 'Immutable X',
-    'INJ': 'Injective',
-    'OP': 'Optimism',
-    'RENDER': 'Render Token',
-    'SEI': 'Sei',
-    'WIF': 'dogwifhat',
-    'STX': 'Stacks',
-    'SUI': 'Sui',
-    'AAVE': 'Aave',
-    'GRT': 'The Graph',
-    'THETA': 'Theta Network',
-    'RUNE': 'THORChain',
-    'FTM': 'Fantom',
-    'BONK': 'Bonk',
-    'PEPE': 'Pepe',
-    'ALGO': 'Algorand',
-    'FLOW': 'Flow',
-    'EGLD': 'MultiversX',
-    'MANA': 'Decentraland',
-    'SAND': 'The Sandbox',
-    'XTZ': 'Tezos',
-    'BEAM': 'Beam',
-    'AXS': 'Axie Infinity',
-    'CHZ': 'Chiliz',
-    'DYDX': 'dYdX',
-    'KAS': 'Kaspa',
-    'ROSE': 'Oasis Network',
-    'GALA': 'Gala',
-    'ENS': 'Ethereum Name Service',
-    'BLUR': 'Blur',
-    'GMT': 'STEPN',
-    'CFX': 'Conflux',
-    'CRV': 'Curve DAO Token',
-    'ORDI': 'ORDI',
-    'COMP': 'Compound',
-    'PYTH': 'Pyth Network',
-    'SUPER': 'SuperVerse',
-    'WLD': 'Worldcoin',
-    'SATS': '1000SATS',
-    'PENDLE': 'Pendle',
-    'FET': 'Fetch.ai',
-    'JASMY': 'JasmyCoin',
-    'OCEAN': 'Ocean Protocol',
-    'JTO': 'Jito',
-    'CAKE': 'PancakeSwap',
-    'TIA': 'Celestia',
-    'JUP': 'Jupiter',
-    'STRK': 'Starknet',
-    'MEME': 'Memecoin',
-    'BOME': 'BOOK OF MEME',
-    'ENA': 'Ethena',
-    'WOO': 'WOO Network',
-    'RNDR': 'Render Token',
-    'FLOKI': 'FLOKI',
-    'PEOPLE': 'ConstitutionDAO',
-    'AGIX': 'SingularityNET',
-    'ARKM': 'Arkham',
-    'KAVA': 'Kava',
-    'WAVES': 'Waves',
-    'ZIL': 'Zilliqa',
-    'AR': 'Arweave',
-    'LUNC': 'Terra Luna Classic',
-    'ONE': 'Harmony',
-    'QTUM': 'Qtum',
-    'ZEC': 'Zcash',
-    'DASH': 'Dash',
-    'NEO': 'Neo',
-    'IOST': 'IOST',
-    'ZEN': 'Horizen',
-    'TFUEL': 'Theta Fuel',
-    'IOTX': 'IoTeX'
+  const handleImageError = () => {
+    setIconError(prev => prev + 1);
   };
 
-  // Load crypto symbols from localStorage
+  if (iconError >= iconSources.length - 1 || iconSources[iconError] === null) {
+    // Styled text fallback with crypto-specific colors
+    const colors = cryptoColors[symbol] || { from: 'from-blue-500', to: 'to-purple-600' };
+    
+    return (
+      <div className={`w-6 h-6 rounded-full bg-gradient-to-br ${colors.from} ${colors.to} flex items-center justify-center text-white text-xs font-bold shadow-sm`}>
+        {symbol.slice(0, 2)}
+      </div>
+    );
+  }
+
+  return (
+    <img
+      src={iconSources[iconError] || ''}
+      alt={symbol}
+      className="w-6 h-6 rounded"
+      onError={handleImageError}
+      loading="lazy"
+    />
+  );
+};
+
+const DashboardHome = ({ language }: DashboardHomeProps) => {
+  // Load settings from localStorage
   const [cryptoSymbols, setCryptoSymbols] = useState<string[]>(() => {
     try {
       const saved = localStorage.getItem('tetonicSettings');
@@ -135,12 +82,22 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
     }
   });
 
+  const [selectedService, setSelectedService] = useState<CryptoServiceName>(() => {
+    try {
+      const saved = localStorage.getItem('tetonicSettings');
+      const settings = saved ? JSON.parse(saved) : null;
+      return settings?.cryptoService || 'binance';
+    } catch {
+      return 'binance';
+    }
+  });
+
   const [cryptocurrencies, setCryptocurrencies] = useState<CryptocurrencyData[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [wsConnected, setWsConnected] = useState(false);
 
-  // Fetch initial data from Binance API
+  // Fetch initial data using selected service
   const fetchInitialData = async () => {
     // Don't fetch if no symbols are selected
     if (cryptoSymbols.length === 0) {
@@ -153,44 +110,15 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
       setLoading(true);
       setError(null);
 
-      // Fetch 24hr ticker statistics for all symbols
-      const response = await fetch('https://api.binance.com/api/v3/ticker/24hr');
+      const service = getCryptoService(selectedService);
+      const data = await service.fetchInitialData(cryptoSymbols);
       
-      if (!response.ok) {
-        throw new Error('Failed to fetch data from Binance');
-      }
-
-      const allData = await response.json();
-
-      // Filter data for our selected symbols and convert to USDT pairs
-      const filteredData = cryptoSymbols
-        .map(symbol => {
-          // Try different pair formats
-          const usdtPair = allData.find((item: any) => 
-            item.symbol === `${symbol}USDT` || 
-            item.symbol === `${symbol}BUSD` || 
-            item.symbol === `${symbol}USD`
-          );
-          
-          if (usdtPair) {
-            return {
-              symbol,
-              name: cryptoNames[symbol] || symbol,
-              price: parseFloat(usdtPair.lastPrice),
-              change: parseFloat(usdtPair.priceChangePercent),
-              marketCap: 0, // Binance API doesn't provide market cap directly
-              volume: parseFloat(usdtPair.quoteVolume)
-            };
-          }
-          
-          return null;
-        })
-        .filter(Boolean) as CryptocurrencyData[];
-
-      setCryptocurrencies(filteredData);
-    } catch (err: any) {
-      setError(err.message || 'Failed to fetch cryptocurrency data');
+      setCryptocurrencies(data);
+      setWsConnected(false);
+    } catch (err) {
       console.error('Error fetching crypto data:', err);
+      setError(err instanceof Error ? err.message : 'Failed to fetch data');
+      setCryptocurrencies([]);
     } finally {
       setLoading(false);
     }
@@ -200,160 +128,172 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
   const setupWebSocket = (): WebSocket | null => {
     if (cryptoSymbols.length === 0) return null;
 
-    // Create stream names for all symbols (prioritize USDT pairs)
-    const streams = cryptoSymbols
-      .map(symbol => `${symbol.toLowerCase()}usdt@ticker`)
-      .join('/');
-
-    const wsUrl = `wss://stream.binance.com:9443/ws/${streams}`;
+    const service = getCryptoService(selectedService);
     
-    console.log('Connecting to WebSocket:', wsUrl);
-    
-    const ws = new WebSocket(wsUrl);
+    if (!service.supportsWebSocket) {
+      // For services without WebSocket (like CoinGecko), set up polling
+      const interval = setInterval(fetchInitialData, 30000); // Poll every 30 seconds
+      return {
+        close: () => clearInterval(interval)
+      } as any;
+    }
 
-    ws.onopen = () => {
-      console.log('WebSocket connected');
-      setWsConnected(true);
-      setError(null);
-    };
-
-    ws.onmessage = (event) => {
-      try {
-        const data = JSON.parse(event.data);
-        
-        // Handle single stream data
-        if (data.s) {
-          updateCryptocurrencyData(data);
+    const ws = service.setupWebSocket?.(cryptoSymbols, (updatedData: CryptocurrencyData) => {
+      setCryptocurrencies(prev => {
+        const index = prev.findIndex(item => item.symbol === updatedData.symbol);
+        if (index >= 0) {
+          const newData = [...prev];
+          newData[index] = updatedData;
+          return newData;
+        } else {
+          return [...prev, updatedData];
         }
-        // Handle multiple streams data (array)
-        else if (Array.isArray(data)) {
-          data.forEach(item => updateCryptocurrencyData(item));
-        }
-      } catch (err) {
-        console.error('Error parsing WebSocket data:', err);
-      }
-    };
-
-    ws.onerror = (error) => {
-      console.error('WebSocket error:', error);
-      setWsConnected(false);
-      setError('WebSocket connection error');
-    };
-
-    ws.onclose = () => {
-      console.log('WebSocket disconnected');
-      setWsConnected(false);
-      
-      // Reconnect after 3 seconds
-      setTimeout(() => {
-        if (cryptoSymbols.length > 0) {
-          setupWebSocket();
-        }
-      }, 3000);
-    };
-
-    return ws;
-  };
-
-  // Update cryptocurrency data from WebSocket
-  const updateCryptocurrencyData = (tickerData: any) => {
-    const symbol = tickerData.s.replace('USDT', '').replace('BUSD', '').replace('USD', '');
-    
-    setCryptocurrencies(prev => {
-      const index = prev.findIndex(crypto => crypto.symbol === symbol);
-      if (index === -1) return prev;
-
-      const updated = [...prev];
-      updated[index] = {
-        ...updated[index],
-        price: parseFloat(tickerData.c), // Current price
-        change: parseFloat(tickerData.P), // 24h price change percentage
-        volume: parseFloat(tickerData.q) // 24h quote volume
-      };
-      
-      return updated;
+      });
     });
+
+    if (ws) {
+      ws.onopen = () => {
+        console.log(`${service.name} WebSocket connected`);
+        setWsConnected(true);
+      };
+
+      ws.onclose = () => {
+        console.log(`${service.name} WebSocket disconnected`);
+        setWsConnected(false);
+      };
+
+      ws.onerror = (error) => {
+        console.error(`${service.name} WebSocket error:`, error);
+        setWsConnected(false);
+      };
+    }
+
+    return ws || null;
   };
 
-  // Listen for changes in localStorage
+  // Listen for settings changes
   useEffect(() => {
     const handleStorageChange = () => {
       try {
         const saved = localStorage.getItem('tetonicSettings');
         const settings = saved ? JSON.parse(saved) : null;
-        if (settings?.cryptoSymbols) {
-          setCryptoSymbols(settings.cryptoSymbols);
+        if (settings) {
+          const newSymbols = settings.cryptoSymbols || [];
+          const newService = settings.cryptoService || 'binance';
+          
+          if (JSON.stringify(newSymbols) !== JSON.stringify(cryptoSymbols) || newService !== selectedService) {
+            setCryptoSymbols(newSymbols);
+            setSelectedService(newService);
+          }
         }
-      } catch {
-        // ignore errors
+      } catch (error) {
+        console.error('Error reading settings:', error);
       }
     };
 
     window.addEventListener('storage', handleStorageChange);
-    return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+    
+    // Also check for changes periodically (for same-tab changes)
+    const interval = setInterval(handleStorageChange, 1000);
 
-  // Fetch initial data and setup WebSocket when symbols change
-  useEffect(() => {
-    let ws: WebSocket | null = null;
-
-    const initializeData = async () => {
-      // Fetch initial data
-      await fetchInitialData();
-      
-      // Setup WebSocket for real-time updates
-      if (cryptoSymbols.length > 0) {
-        ws = setupWebSocket();
-      }
-    };
-
-    initializeData();
-
-    // Cleanup WebSocket on unmount or symbols change
     return () => {
+      window.removeEventListener('storage', handleStorageChange);
+      clearInterval(interval);
+    };
+  }, [cryptoSymbols, selectedService]);
+
+  // Initial data load and WebSocket setup
+  useEffect(() => {
+    fetchInitialData();
+
+    let ws: WebSocket | null = null;
+    
+    // Set up WebSocket after initial data load
+    const timeoutId = setTimeout(() => {
+      ws = setupWebSocket();
+    }, 2000);
+
+    return () => {
+      clearTimeout(timeoutId);
       if (ws) {
         ws.close();
       }
     };
-  }, [cryptoSymbols]);
+  }, [cryptoSymbols, selectedService]);
 
-  // Refresh function for manual refresh button
-  const handleRefresh = async () => {
-    await fetchInitialData();
+  const formatPrice = (price: number): string => {
+    if (price >= 1) {
+      return `$${price.toLocaleString(undefined, { 
+        minimumFractionDigits: 2, 
+        maximumFractionDigits: 2 
+      })}`;
+    } else {
+      return `$${price.toFixed(6)}`;
+    }
+  };
+
+  const formatChange = (change: number): string => {
+    const sign = change >= 0 ? '+' : '';
+    return `${sign}${change.toFixed(2)}%`;
+  };
+
+  const formatVolume = (volume: number): string => {
+    if (volume >= 1000000000) {
+      return `$${(volume / 1000000000).toFixed(2)}B`;
+    } else if (volume >= 1000000) {
+      return `$${(volume / 1000000).toFixed(2)}M`;
+    } else if (volume >= 1000) {
+      return `$${(volume / 1000).toFixed(2)}K`;
+    }
+    return `$${volume.toFixed(2)}`;
+  };
+
+  const formatMarketCap = (marketCap: number): string => {
+    if (marketCap === 0) return 'N/A';
+    if (marketCap >= 1000000000000) {
+      return `$${(marketCap / 1000000000000).toFixed(2)}T`;
+    } else if (marketCap >= 1000000000) {
+      return `$${(marketCap / 1000000000).toFixed(2)}B`;
+    } else if (marketCap >= 1000000) {
+      return `$${(marketCap / 1000000).toFixed(2)}M`;
+    }
+    return `$${marketCap.toFixed(2)}`;
   };
 
   const texts = {
     en: {
       title: 'Cryptocurrency Market',
+      subtitle: `Real-time data from ${getCryptoService(selectedService).name}`,
+      refresh: 'Refresh',
       symbol: 'Symbol',
       name: 'Name',
-      price: 'Price (USDT)',
+      price: 'Price',
       change: '24h Change',
+      marketCap: 'Market Cap',
       volume: '24h Volume',
-      refresh: 'Refresh',
-      loading: 'Loading market data...',
+      noData: 'No cryptocurrency data available',
+      configureSymbols: 'Configure symbols in Settings',
+      loading: 'Loading cryptocurrency data...',
       error: 'Error loading data',
-      retry: 'Retry',
-      noData: 'Please select cryptocurrencies from Settings first',
-      connected: 'Connected',
-      disconnected: 'Disconnected', 
-      realTime: 'Real-time'
+      wsConnected: 'Real-time updates active',
+      wsDisconnected: 'Real-time updates inactive'
     },
     fa: {
       title: 'بازار ارزهای دیجیتال',
+      subtitle: `داده‌های لحظه‌ای از ${getCryptoService(selectedService).name}`,
+      refresh: 'بروزرسانی',
       symbol: 'نماد',
       name: 'نام',
-      price: 'قیمت (USDT)',
+      price: 'قیمت',
       change: 'تغییر ۲۴ ساعته',
+      marketCap: 'ارزش بازار',
       volume: 'حجم ۲۴ ساعته',
-      refresh: 'بروزرسانی',
-      loading: 'در حال بارگذاری اطلاعات بازار...',
-      error: 'خطا در بارگذاری اطلاعات',
-      retry: 'تلاش مجدد',
-      noData: 'ابتدا از بخش تنظیمات، ارزهای مورد نظر خود را انتخاب کنید',
-      connected: 'متصل',
-      disconnected: 'قطع شده',
-      realTime: 'لحظه‌ای'
+      noData: 'داده‌ای از ارزهای دیجیتال در دسترس نیست',
+      configureSymbols: 'نمادها را در تنظیمات پیکربندی کنید',
+      loading: 'بارگذاری داده‌های ارز دیجیتال...',
+      error: 'خطا در بارگذاری داده‌ها',
+      wsConnected: 'به‌روزرسانی‌های لحظه‌ای فعال',
+      wsDisconnected: 'به‌روزرسانی‌های لحظه‌ای غیرفعال'
     }
   };
 
@@ -362,8 +302,8 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
 
   if (loading) {
     return (
-      <div className={`p-6 space-y-6 custom-scrollbar ${isRTL ? 'text-right' : ''}`}>
-        <div className="flex items-center justify-center min-h-[400px]">
+      <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
+        <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
             <RefreshCw className="h-8 w-8 animate-spin mx-auto text-muted-foreground" />
             <p className="text-muted-foreground">{t.loading}</p>
@@ -375,13 +315,13 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
 
   if (error) {
     return (
-      <div className={`p-6 space-y-6 custom-scrollbar ${isRTL ? 'text-right' : ''}`}>
-        <div className="flex items-center justify-center min-h-[400px]">
+      <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
+        <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
-            <p className="text-red-600">{t.error}: {error}</p>
-            <Button onClick={handleRefresh} className="gap-2">
+            <p className="text-destructive">{t.error}: {error}</p>
+            <Button onClick={fetchInitialData} className="gap-2">
               <RefreshCw className="h-4 w-4" />
-              {t.retry}
+              {t.refresh}
             </Button>
           </div>
         </div>
@@ -389,90 +329,100 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
     );
   }
 
+  if (cryptocurrencies.length === 0) {
+    return (
+      <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
+        <div className="flex items-center justify-center h-64">
+          <div className="text-center space-y-4">
+            <TrendingUp className="h-12 w-12 mx-auto text-muted-foreground" />
+            <div>
+              <p className="text-lg font-medium">{t.noData}</p>
+              <p className="text-sm text-muted-foreground">{t.configureSymbols}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
-    <div className={`p-6 space-y-6 custom-scrollbar ${isRTL ? 'text-right' : ''}`}>
-      {/* Cryptocurrency Market */}
+    <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
+      {/* Header */}
+      <div className="flex items-center justify-between">
+        <div className="space-y-1">
+          <h1 className="text-3xl font-bold">{t.title}</h1>
+          <div className="flex items-center gap-2 text-sm text-muted-foreground">
+            <span>{t.subtitle}</span>
+            {getCryptoService(selectedService).supportsWebSocket && (
+              <span className={`inline-flex items-center gap-1 px-2 py-1 rounded-full text-xs ${
+                wsConnected 
+                  ? 'bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300' 
+                  : 'bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-300'
+              }`}>
+                <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-yellow-500'}`} />
+                {wsConnected ? t.wsConnected : t.wsDisconnected}
+              </span>
+            )}
+          </div>
+        </div>
+        <Button onClick={fetchInitialData} className="gap-2">
+          <RefreshCw className="h-4 w-4" />
+          {t.refresh}
+        </Button>
+      </div>
+
+      {/* Cryptocurrency Table */}
       <Card>
         <CardHeader>
-          <div className="flex items-center justify-between">
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              {t.title}
-              {/* WebSocket connection status */}
-              <div className="flex items-center gap-2 ml-4">
-                <div className={`w-2 h-2 rounded-full ${wsConnected ? 'bg-green-500' : 'bg-red-500'}`} />
-                <span className="text-xs text-muted-foreground">
-                  {wsConnected ? t.realTime : t.disconnected}
-                </span>
-              </div>
-            </CardTitle>
-            <Button 
-              variant="outline" 
-              size="sm" 
-              onClick={handleRefresh}
-              disabled={loading}
-              className="gap-2"
-            >
-              <RefreshCw className={`h-4 w-4 ${loading ? 'animate-spin' : ''}`} />
-              {t.refresh}
-            </Button>
-          </div>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            {t.title}
+          </CardTitle>
         </CardHeader>
         <CardContent>
-          {cryptocurrencies.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">
-              {t.noData}
-            </div>
-          ) : (
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead>
-                  <tr className="border-b">
-                    <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.symbol}</th>
-                    <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.name}</th>
-                    <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.price}</th>
-                    <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.change}</th>
-                    <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.volume}</th>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.symbol}</th>
+                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.name}</th>
+                  <th className={`py-3 px-4 text-right font-medium ${isRTL ? 'text-left' : ''}`}>{t.price}</th>
+                  <th className={`py-3 px-4 text-right font-medium ${isRTL ? 'text-left' : ''}`}>{t.change}</th>
+                  <th className={`py-3 px-4 text-right font-medium ${isRTL ? 'text-left' : ''}`}>{t.volume}</th>
+                  <th className={`py-3 px-4 text-right font-medium ${isRTL ? 'text-left' : ''}`}>{t.marketCap}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cryptocurrencies.map((crypto) => (
+                  <tr key={crypto.symbol} className="border-b hover:bg-muted/50">
+                    <td className="py-3 px-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-8 h-8 rounded-full overflow-hidden bg-gray-100 dark:bg-gray-800 flex items-center justify-center shrink-0">
+                          <CryptoIcon symbol={crypto.symbol} />
+                        </div>
+                        <span className="font-medium">{crypto.symbol}</span>
+                      </div>
+                    </td>
+                    <td className="py-3 px-4 text-muted-foreground">{crypto.name}</td>
+                    <td className={`py-3 px-4 font-mono font-medium ${isRTL ? 'text-left' : 'text-right'}`}>
+                      {formatPrice(crypto.price)}
+                    </td>
+                    <td className={`py-3 px-4 font-mono font-medium ${isRTL ? 'text-left' : 'text-right'} ${
+                      crypto.change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
+                    }`}>
+                      {formatChange(crypto.change)}
+                    </td>
+                    <td className={`py-3 px-4 font-mono text-muted-foreground ${isRTL ? 'text-left' : 'text-right'}`}>
+                      {formatVolume(crypto.volume)}
+                    </td>
+                    <td className={`py-3 px-4 font-mono text-muted-foreground ${isRTL ? 'text-left' : 'text-right'}`}>
+                      {formatMarketCap(crypto.marketCap)}
+                    </td>
                   </tr>
-                </thead>
-                <tbody>
-                  {cryptocurrencies.map((crypto) => (
-                    <tr key={crypto.symbol} className="border-b hover:bg-muted/50 transition-colors">
-                      <td className="py-3 px-4">
-                        <div className="font-semibold">{crypto.symbol}</div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="text-sm text-muted-foreground">{crypto.name}</div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="font-medium">
-                          ${crypto.price < 1 
-                            ? crypto.price.toFixed(6) 
-                            : crypto.price.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })
-                          }
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className={`font-medium ${crypto.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                          {crypto.change >= 0 ? '+' : ''}{crypto.change.toFixed(2)}%
-                        </div>
-                      </td>
-                      <td className="py-3 px-4">
-                        <div className="text-sm">
-                          ${crypto.volume >= 1000000000 
-                            ? (crypto.volume / 1000000000).toFixed(2) + 'B' 
-                            : crypto.volume >= 1000000 
-                            ? (crypto.volume / 1000000).toFixed(2) + 'M'
-                            : crypto.volume.toLocaleString()
-                          }
-                        </div>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
+                ))}
+              </tbody>
+            </table>
+          </div>
         </CardContent>
       </Card>
     </div>

@@ -28,10 +28,12 @@ import {
   Upload,
   Coins,
   Plus,
-  Trash2
+  Trash2,
+  Settings
 } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { toast } from 'sonner';
+import { getAvailableServices, type CryptoServiceName } from '@/services';
 
 interface SettingsPageProps {
   language: 'en' | 'fa';
@@ -99,6 +101,12 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
     return saved?.cryptoSymbols || defaultCryptoSymbols;
   });
 
+  // Crypto service selection
+  const [selectedCryptoService, setSelectedCryptoService] = useState<CryptoServiceName>(() => {
+    const saved = loadSettings();
+    return saved?.cryptoService || 'binance';
+  });
+
   // Dialog states
   const [newSymbolDialog, setNewSymbolDialog] = useState(false);
   const [newSymbol, setNewSymbol] = useState('');
@@ -111,6 +119,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
       profile: profileData,
       notifications,
       cryptoSymbols,
+      cryptoService: selectedCryptoService,
       theme,
       timestamp: new Date().toISOString()
     };
@@ -129,6 +138,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
         if (backup.profile) setProfileData(backup.profile);
         if (backup.notifications) setNotifications(backup.notifications);
         if (backup.cryptoSymbols) setCryptoSymbols(backup.cryptoSymbols);
+        if (backup.cryptoService) setSelectedCryptoService(backup.cryptoService);
         if (backup.theme) setTheme(backup.theme);
         
         saveToLocalStorage();
@@ -146,6 +156,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
       profile: profileData,
       notifications,
       cryptoSymbols,
+      cryptoService: selectedCryptoService,
       theme,
       timestamp: new Date().toISOString(),
       version: '1.0.0'
@@ -167,7 +178,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
   // Auto-save settings when they change
   useEffect(() => {
     saveToLocalStorage();
-  }, [profileData, notifications, cryptoSymbols]);
+  }, [profileData, notifications, cryptoSymbols, selectedCryptoService]);
 
   const texts = {
     en: {
@@ -204,6 +215,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
       systemMode: 'System',
       // Symbols
       cryptoSymbols: 'Cryptocurrency Symbols',
+      cryptoService: 'Crypto Data Provider',
       addSymbol: 'Add Symbol',
       symbolPlaceholder: 'e.g., BTC',
       remove: 'Remove',
@@ -254,6 +266,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
       systemMode: 'سیستم',
       // Symbols
       cryptoSymbols: 'نمادهای ارز دیجیتال',
+      cryptoService: 'ارائه‌دهنده داده‌های ارز',
       addSymbol: 'افزودن نماد',
       symbolPlaceholder: 'مثال: BTC',
       remove: 'حذف',
@@ -526,6 +539,54 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
 
         {/* Crypto Symbols Settings */}
         <TabsContent value="symbols" className="space-y-6">
+          {/* Crypto Service Selection */}
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Settings className="h-5 w-5" />
+                {t.cryptoService}
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label>
+                    {language === 'en' 
+                      ? 'Select crypto data provider:'
+                      : 'انتخاب ارائه‌دهنده داده‌های ارز:'
+                    }
+                  </Label>
+                  <Select value={selectedCryptoService} onValueChange={(value: CryptoServiceName) => setSelectedCryptoService(value)}>
+                    <SelectTrigger>
+                      <SelectValue />
+                    </SelectTrigger>
+                    <SelectContent>
+                      {getAvailableServices().map((service) => (
+                        <SelectItem key={service.id} value={service.id}>
+                          <div className="flex items-center gap-2">
+                            <span>{service.name}</span>
+                            {service.supportsWebSocket && (
+                              <span className="text-xs bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-300 px-1.5 py-0.5 rounded">
+                                WebSocket
+                              </span>
+                            )}
+                          </div>
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </div>
+                <p className="text-sm text-muted-foreground">
+                  {language === 'en' 
+                    ? 'Choose your preferred cryptocurrency data provider. WebSocket enabled services provide real-time updates.'
+                    : 'ارائه‌دهنده داده‌های ارز دیجیتال مورد نظر خود را انتخاب کنید. سرویس‌های دارای WebSocket به‌روزرسانی‌های لحظه‌ای ارائه می‌دهند.'
+                  }
+                </p>
+              </div>
+            </CardContent>
+          </Card>
+
+          {/* Crypto Symbols */}
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
