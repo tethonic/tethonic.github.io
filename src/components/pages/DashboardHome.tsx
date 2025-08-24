@@ -6,6 +6,7 @@ import {
   RefreshCw
 } from 'lucide-react';
 import { getCryptoService, type CryptoServiceName } from '@/services';
+import { cryptoDataManager } from '@/services/cryptoDataManager';
 import type { CryptocurrencyData } from '@/services/cryptoTypes';
 
 interface DashboardHomeProps {
@@ -97,7 +98,7 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
   const [error, setError] = useState<string | null>(null);
   const [wsConnected, setWsConnected] = useState(false);
 
-  // Fetch initial data using selected service
+  // Fetch initial data using fallback strategy
   const fetchInitialData = async () => {
     // Don't fetch if no symbols are selected
     if (cryptoSymbols.length === 0) {
@@ -110,14 +111,14 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
       setLoading(true);
       setError(null);
 
-      const service = getCryptoService(selectedService);
-      const data = await service.fetchInitialData(cryptoSymbols);
+      // Use crypto data manager with fallback strategy
+      const data = await cryptoDataManager.fetchWithFallback(cryptoSymbols, selectedService);
       
       setCryptocurrencies(data);
       setWsConnected(false);
     } catch (err) {
       console.error('Error fetching crypto data:', err);
-      setError(err instanceof Error ? err.message : 'Failed to fetch data');
+      setError(err instanceof Error ? err.message : 'Failed to fetch data from all sources');
       setCryptocurrencies([]);
     } finally {
       setLoading(false);
