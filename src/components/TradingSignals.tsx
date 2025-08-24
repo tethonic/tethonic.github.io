@@ -81,7 +81,18 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
       case 'BUY': return 'text-green-600 dark:text-green-400';
       case 'SELL': return 'text-red-600 dark:text-red-400';
       case 'HOLD': return 'text-yellow-600 dark:text-yellow-400';
+      case 'WAIT': return 'text-gray-600 dark:text-gray-400';
       default: return 'text-gray-600 dark:text-gray-400';
+    }
+  };
+
+  const getActionText = (action: string) => {
+    switch (action) {
+      case 'BUY': return 'خرید';
+      case 'SELL': return 'فروش';
+      case 'HOLD': return 'نگه‌داری';
+      case 'WAIT': return 'انتظار';
+      default: return action;
     }
   };
 
@@ -150,32 +161,35 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
       <table className="w-full">
         <thead>
           <tr className="border-b">
-            <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.symbol}</th>
-            <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.signal}</th>
-            <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.confidence}</th>
-            <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.action}</th>
-            <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.reasons}</th>
-            <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.trading}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.symbol}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.signal}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.confidence}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.action}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.reasons}</th>
+            <th className="py-3 px-4 text-right font-medium">{t.trading}</th>
           </tr>
         </thead>
         <tbody>
           {filteredSignals.map((signalData) => (
             <tr key={signalData.symbol} className="border-b hover:bg-muted/50">
-              <td className="py-3 px-4">
-                <div className="flex items-center gap-2">
+              <td className="py-3 px-4 text-right">
+                <div className="flex items-center gap-2 justify-end">
+                  <span className="font-medium">{signalData.symbol}</span>
                   <div className="w-6 h-6 rounded-full bg-primary/10 flex items-center justify-center text-xs font-bold">
                     {signalData.symbol.slice(0, 2)}
                   </div>
-                  <span className="font-medium">{signalData.symbol}</span>
                 </div>
               </td>
-              <td className="py-3 px-4">
-                <Badge className={getSignalColor(signalData.signal)}>
-                  {signalData.signal}
-                </Badge>
+              <td className="py-3 px-4 text-right">
+                <div className="flex justify-end">
+                  <Badge className={getSignalColor(signalData.signal)}>
+                    {signalData.signal}
+                  </Badge>
+                </div>
               </td>
-              <td className="py-3 px-4">
-                <div className="flex items-center gap-2">
+              <td className="py-3 px-4 text-right">
+                <div className="flex items-center gap-2 justify-end">
+                  <span className="text-sm font-medium min-w-[3rem] text-left">{signalData.confidence}%</span>
                   <div className="w-full bg-gray-200 rounded-full h-2 dark:bg-gray-700 relative">
                     <div 
                       className={`h-2 rounded-full transition-all duration-300 ${
@@ -184,54 +198,53 @@ const TradingSignalsComponent = ({ cryptoData }: TradingSignalsProps) => {
                       } ${getProgressWidthClass(signalData.confidence)}`}
                     ></div>
                   </div>
-                  <span className="text-sm font-medium min-w-[3rem]">{signalData.confidence}%</span>
                 </div>
               </td>
-              <td className="py-3 px-4">
-                <div className={`flex items-center gap-1 ${getActionColor(signalData.action)}`}>
+              <td className="py-3 px-4 text-right">
+                <div className={`flex items-center gap-1 justify-end ${getActionColor(signalData.action)}`}>
+                  <span className="font-medium">{getActionText(signalData.action)}</span>
                   {signalData.action === 'BUY' && <TrendingUp className="h-4 w-4" />}
                   {signalData.action === 'SELL' && <TrendingDown className="h-4 w-4" />}
                   {signalData.action === 'HOLD' && <Activity className="h-4 w-4" />}
                   {signalData.action === 'WAIT' && <Clock className="h-4 w-4" />}
-                  <span className="font-medium">{signalData.action}</span>
                 </div>
               </td>
-              <td className="py-3 px-4">
-                <div className="text-sm space-y-1 max-w-xs">
+              <td className="py-3 px-4 text-right">
+                <div className="text-sm space-y-1 max-w-xs text-right">
                   {signalData.reason.slice(0, 2).map((reason, idx) => (
                     <div key={idx} className="text-muted-foreground truncate">
-                      • {reason}
+                      {reason} •
                     </div>
                   ))}
                   {signalData.reason.length > 2 && (
                     <div className="text-xs text-muted-foreground">
-                      +{signalData.reason.length - 2} {t.moreReasons}
+                      {t.moreReasons} {signalData.reason.length - 2}+
                     </div>
                   )}
                 </div>
               </td>
-              <td className="py-3 px-4">
+              <td className="py-3 px-4 text-right">
                 {signalData.entry_price && (
                   <div className="text-xs space-y-1">
-                    <div className="flex items-center gap-1">
+                    <div className="flex items-center gap-1 justify-end">
+                      <span className="text-left">${signalData.entry_price.toFixed(6)} :{t.entryLabel}</span>
                       <Target className="h-3 w-3" />
-                      <span>{t.entryLabel}: ${signalData.entry_price.toFixed(6)}</span>
                     </div>
                     {signalData.stop_loss && (
-                      <div className="flex items-center gap-1 text-red-600">
+                      <div className="flex items-center gap-1 text-red-600 justify-end">
+                        <span className="text-left">${signalData.stop_loss.toFixed(6)} :{t.stopLossLabel}</span>
                         <AlertTriangle className="h-3 w-3" />
-                        <span>{t.stopLossLabel}: ${signalData.stop_loss.toFixed(6)}</span>
                       </div>
                     )}
                     {signalData.take_profit && (
-                      <div className="flex items-center gap-1 text-green-600">
+                      <div className="flex items-center gap-1 text-green-600 justify-end">
+                        <span className="text-left">${signalData.take_profit.toFixed(6)} :{t.takeProfitLabel}</span>
                         <DollarSign className="h-3 w-3" />
-                        <span>{t.takeProfitLabel}: ${signalData.take_profit.toFixed(6)}</span>
                       </div>
                     )}
                     {signalData.risk_reward_ratio && (
-                      <div className="text-xs text-muted-foreground">
-                        R/R: 1:{signalData.risk_reward_ratio}
+                      <div className="text-xs text-muted-foreground text-right">
+                        1:{signalData.risk_reward_ratio} :ریسک/سود
                       </div>
                     )}
                   </div>

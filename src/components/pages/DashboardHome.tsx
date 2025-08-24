@@ -362,12 +362,12 @@ const DashboardHome = () => {
             <table className="w-full">
               <thead>
                 <tr className="border-b">
-                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.symbol}</th>
-                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.name}</th>
-                  <th className={`py-3 px-4 text-right font-medium ${isRTL ? 'text-left' : ''}`}>{t.price}</th>
-                  <th className={`py-3 px-4 text-right font-medium ${isRTL ? 'text-left' : ''}`}>{t.change}</th>
-                  <th className={`py-3 px-4 text-right font-medium ${isRTL ? 'text-left' : ''}`}>{t.volume}</th>
-                  <th className={`py-3 px-4 text-right font-medium ${isRTL ? 'text-left' : ''}`}>{t.marketCap}</th>
+                  <th className="py-3 px-4 text-right font-medium">{t.symbol}</th>
+                  <th className="py-3 px-4 text-right font-medium">{t.name}</th>
+                  <th className="py-3 px-4 text-right font-medium">{t.price}</th>
+                  <th className="py-3 px-4 text-right font-medium">{t.change}</th>
+                  <th className="py-3 px-4 text-right font-medium">{t.volume}</th>
+                  <th className="py-3 px-4 text-right font-medium">{t.marketCap}</th>
                 </tr>
               </thead>
               <tbody>
@@ -382,18 +382,18 @@ const DashboardHome = () => {
                       </div>
                     </td>
                     <td className="py-3 px-4 text-muted-foreground">{crypto.name}</td>
-                    <td className={`py-3 px-4 font-mono font-medium ${isRTL ? 'text-left' : 'text-right'}`}>
+                    <td className="py-3 px-4 font-mono font-medium text-left">
                       {formatPrice(crypto.price)}
                     </td>
-                    <td className={`py-3 px-4 font-mono font-medium ${isRTL ? 'text-left' : 'text-right'} ${
+                    <td className={`py-3 px-4 font-mono font-medium text-left ${
                       crypto.change >= 0 ? 'text-green-600 dark:text-green-400' : 'text-red-600 dark:text-red-400'
                     }`}>
                       {formatChange(crypto.change)}
                     </td>
-                    <td className={`py-3 px-4 font-mono text-muted-foreground ${isRTL ? 'text-left' : 'text-right'}`}>
+                    <td className="py-3 px-4 font-mono text-muted-foreground text-left">
                       {formatVolume(crypto.volume)}
                     </td>
-                    <td className={`py-3 px-4 font-mono text-muted-foreground ${isRTL ? 'text-left' : 'text-right'}`}>
+                    <td className="py-3 px-4 font-mono text-muted-foreground text-left">
                       {formatMarketCap(crypto.marketCap)}
                     </td>
                   </tr>

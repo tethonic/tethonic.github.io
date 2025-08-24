@@ -11,8 +11,8 @@ import { TrendingUp, Eye, EyeOff } from 'lucide-react';
 import { toast } from 'sonner';
 
 const loginSchema = z.object({
-  username: z.string().min(1, 'Username is required'),
-  password: z.string().min(1, 'Password is required'),
+  username: z.string().min(1, 'نام کاربری الزامی است'),
+  password: z.string().min(1, 'رمز عبور الزامی است'),
 });
 
 type LoginForm = z.infer<typeof loginSchema>;
