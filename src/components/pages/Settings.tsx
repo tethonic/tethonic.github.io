@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
@@ -6,20 +6,29 @@ import { Label } from '@/components/ui/label';
 import { Switch } from '@/components/ui/switch';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
-import { Separator } from '@/components/ui/separator';
-import { Badge } from '@/components/ui/badge';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from '@/components/ui/dialog';
 import { 
   User, 
   Bell, 
-  Globe, 
   Palette, 
   Shield,
-  Smartphone,
   Monitor,
   Moon,
   Sun,
-  Save,
-  RefreshCw
+  RefreshCw,
+  Database,
+  Download,
+  Upload,
+  Coins,
+  Plus,
+  Trash2
 } from 'lucide-react';
 import { useTheme } from '@/components/ThemeProvider';
 import { toast } from 'sonner';
@@ -30,29 +39,143 @@ interface SettingsPageProps {
 
 const SettingsPage = ({ language }: SettingsPageProps) => {
   const { theme, setTheme } = useTheme();
-  const [notifications, setNotifications] = useState({
-    tradingSignals: true,
-    newsAlerts: true,
-    priceAlerts: false,
-    marketUpdates: true,
-    pushNotifications: true
+  
+  // Load settings from localStorage
+  const loadSettings = () => {
+    try {
+      const saved = localStorage.getItem('tetonicSettings');
+      return saved ? JSON.parse(saved) : null;
+    } catch {
+      return null;
+    }
+  };
+
+  const [notifications, setNotifications] = useState(() => {
+    const saved = loadSettings();
+    return saved?.notifications || {
+      tradingSignals: true,
+      newsAlerts: true,
+      priceAlerts: false,
+      marketUpdates: true,
+      pushNotifications: true
+    };
   });
+
+  // Profile state
+  const [profileData, setProfileData] = useState(() => {
+    const saved = loadSettings();
+    return saved?.profile || {
+      username: 'admin',
+      email: 'admin@tethonic.com',
+      language: language,
+      timezone: 'utc'
+    };
+  });
+
+  // Password change state
+  const [passwordData, setPasswordData] = useState({
+    currentPassword: '',
+    newPassword: '',
+    confirmPassword: ''
+  });
+
+  // Cryptocurrencies symbols only
+  const [cryptoSymbols, setCryptoSymbols] = useState<string[]>(() => {
+    const saved = loadSettings();
+    return saved?.cryptoSymbols || ['BTC', 'ETH', 'BNB', 'ADA', 'SOL'];
+  });
+
+  // Dialog states
+  const [newSymbolDialog, setNewSymbolDialog] = useState(false);
+  const [newSymbol, setNewSymbol] = useState('');
+
+  const [isChangingPassword, setIsChangingPassword] = useState(false);
+
+  // Save all settings to localStorage
+  const saveToLocalStorage = () => {
+    const settings = {
+      profile: profileData,
+      notifications,
+      cryptoSymbols,
+      theme,
+      timestamp: new Date().toISOString()
+    };
+    localStorage.setItem('tetonicSettings', JSON.stringify(settings));
+  };
+
+  // Load settings from backup file
+  const handleImportBackup = (event: React.ChangeEvent<HTMLInputElement>) => {
+    const file = event.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const backup = JSON.parse(e.target?.result as string);
+        if (backup.profile) setProfileData(backup.profile);
+        if (backup.notifications) setNotifications(backup.notifications);
+        if (backup.cryptoSymbols) setCryptoSymbols(backup.cryptoSymbols);
+        if (backup.theme) setTheme(backup.theme);
+        
+        saveToLocalStorage();
+        toast.success(language === 'en' ? 'Backup restored successfully' : 'بک‌آپ با موفقیت بازیابی شد');
+      } catch {
+        toast.error(language === 'en' ? 'Invalid backup file' : 'فایل بک‌آپ نامعتبر');
+      }
+    };
+    reader.readAsText(file);
+  };
+
+  // Export backup
+  const handleExportBackup = () => {
+    const settings = {
+      profile: profileData,
+      notifications,
+      cryptoSymbols,
+      theme,
+      timestamp: new Date().toISOString(),
+      version: '1.0.0'
+    };
+
+    const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `tethonic-backup-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    
+    toast.success(language === 'en' ? 'Backup exported successfully' : 'بک‌آپ با موفقیت ذخیره شد');
+  };
+
+  // Auto-save settings when they change
+  useEffect(() => {
+    saveToLocalStorage();
+  }, [profileData, notifications, cryptoSymbols]);
 
   const texts = {
     en: {
       title: 'Settings',
-      subtitle: 'Manage your account preferences and application settings',
-      profile: 'Profile',
+      subtitle: 'Manage your preferences and data',
+      account: 'Account & Security',
       notifications: 'Notifications',
       appearance: 'Appearance',
-      security: 'Security',
-      about: 'About',
-      // Profile
+      symbols: 'Crypto Symbols',
+      backup: 'Backup & Restore',
+      // Account
       personalInfo: 'Personal Information',
       username: 'Username',
       email: 'Email Address',
       language: 'Language',
       timezone: 'Timezone',
+      updateProfile: 'Update Profile',
+      // Security
+      changePassword: 'Change Password',
+      currentPassword: 'Current Password',
+      newPassword: 'New Password',
+      confirmPassword: 'Confirm Password',
       // Notifications
       notificationSettings: 'Notification Settings',
       tradingSignals: 'Trading Signals',
@@ -62,41 +185,47 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
       pushNotifications: 'Push Notifications',
       // Appearance
       themeSettings: 'Theme Settings',
-      lightMode: 'Light Mode',
-      darkMode: 'Dark Mode',
+      lightMode: 'Light',
+      darkMode: 'Dark',
       systemMode: 'System',
-      // Security
-      securitySettings: 'Security Settings',
-      changePassword: 'Change Password',
-      currentPassword: 'Current Password',
-      newPassword: 'New Password',
-      confirmPassword: 'Confirm Password',
-      twoFactor: 'Two-Factor Authentication',
-      // About
-      appInfo: 'Application Information',
-      version: 'Version',
-      buildDate: 'Build Date',
-      developer: 'Developer',
+      // Symbols
+      cryptoSymbols: 'Cryptocurrency Symbols',
+      addSymbol: 'Add Symbol',
+      symbolPlaceholder: 'e.g., BTC',
+      remove: 'Remove',
+      // Backup
+      backupSettings: 'Backup & Restore',
+      exportBackup: 'Export Backup',
+      importBackup: 'Import Backup',
+      exportDesc: 'Download backup of your settings',
+      importDesc: 'Restore settings from backup file',
       // Actions
-      save: 'Save Changes',
-      reset: 'Reset to Default',
+      save: 'Save',
+      cancel: 'Cancel',
+      add: 'Add',
       success: 'Settings saved successfully',
       error: 'Failed to save settings'
     },
     fa: {
       title: 'تنظیمات',
-      subtitle: 'مدیریت تنظیمات حساب کاربری و برنامه',
-      profile: 'پروفایل',
+      subtitle: 'مدیریت تنظیمات و داده‌های شما',
+      account: 'حساب کاربری و امنیت',
       notifications: 'اعلان‌ها',
       appearance: 'ظاهر',
-      security: 'امنیت',
-      about: 'درباره',
-      // Profile
+      symbols: 'نمادهای ارز',
+      backup: 'پشتیبان‌گیری و بازیابی',
+      // Account
       personalInfo: 'اطلاعات شخصی',
       username: 'نام کاربری',
       email: 'آدرس ایمیل',
       language: 'زبان',
       timezone: 'منطقه زمانی',
+      updateProfile: 'به‌روزرسانی پروفایل',
+      // Security
+      changePassword: 'تغییر رمز عبور',
+      currentPassword: 'رمز عبور فعلی',
+      newPassword: 'رمز عبور جدید',
+      confirmPassword: 'تأیید رمز عبور',
       // Notifications
       notificationSettings: 'تنظیمات اعلان‌ها',
       tradingSignals: 'سیگنال‌های معاملاتی',
@@ -106,24 +235,24 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
       pushNotifications: 'اعلان‌های پوش',
       // Appearance
       themeSettings: 'تنظیمات تم',
-      lightMode: 'حالت روشن',
-      darkMode: 'حالت تاریک',
+      lightMode: 'روشن',
+      darkMode: 'تاریک',
       systemMode: 'سیستم',
-      // Security
-      securitySettings: 'تنظیمات امنیت',
-      changePassword: 'تغییر رمز عبور',
-      currentPassword: 'رمز عبور فعلی',
-      newPassword: 'رمز عبور جدید',
-      confirmPassword: 'تأیید رمز عبور',
-      twoFactor: 'احراز هویت دو مرحله‌ای',
-      // About
-      appInfo: 'اطلاعات برنامه',
-      version: 'نسخه',
-      buildDate: 'تاریخ ساخت',
-      developer: 'توسعه‌دهنده',
+      // Symbols
+      cryptoSymbols: 'نمادهای ارز دیجیتال',
+      addSymbol: 'افزودن نماد',
+      symbolPlaceholder: 'مثال: BTC',
+      remove: 'حذف',
+      // Backup
+      backupSettings: 'پشتیبان‌گیری و بازیابی',
+      exportBackup: 'ذخیره پشتیبان',
+      importBackup: 'بازیابی پشتیبان',
+      exportDesc: 'دانلود فایل پشتیبان تنظیمات',
+      importDesc: 'بازیابی تنظیمات از فایل پشتیبان',
       // Actions
-      save: 'ذخیره تغییرات',
-      reset: 'بازنشانی به پیش‌فرض',
+      save: 'ذخیره',
+      cancel: 'لغو',
+      add: 'افزودن',
       success: 'تنظیمات با موفقیت ذخیره شد',
       error: 'خطا در ذخیره تنظیمات'
     }
@@ -132,19 +261,54 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
   const t = texts[language];
   const isRTL = language === 'fa';
 
-  const handleSaveSettings = () => {
-    try {
-      // Simulate saving settings
-      setTimeout(() => {
-        toast.success(t.success);
-      }, 500);
-    } catch (error) {
-      toast.error(t.error);
-    }
+  // Handler functions
+  const handleNotificationChange = (key: string, value: boolean) => {
+    setNotifications((prev: any) => ({ ...prev, [key]: value }));
   };
 
-  const handleNotificationChange = (key: string, value: boolean) => {
-    setNotifications(prev => ({ ...prev, [key]: value }));
+  const handleProfileChange = (field: string, value: string) => {
+    setProfileData((prev: any) => ({ ...prev, [field]: value }));
+  };
+
+  const handlePasswordChange = () => {
+    if (!passwordData.currentPassword || !passwordData.newPassword) {
+      toast.error(language === 'en' ? 'Please fill all password fields' : 'لطفاً تمام فیلدهای رمز عبور را پر کنید');
+      return;
+    }
+    if (passwordData.newPassword !== passwordData.confirmPassword) {
+      toast.error(language === 'en' ? 'Passwords do not match' : 'رمزهای عبور مطابقت ندارند');
+      return;
+    }
+    
+    setIsChangingPassword(true);
+    setTimeout(() => {
+      setIsChangingPassword(false);
+      setPasswordData({ currentPassword: '', newPassword: '', confirmPassword: '' });
+      toast.success(language === 'en' ? 'Password changed successfully' : 'رمز عبور با موفقیت تغییر کرد');
+    }, 1000);
+  };
+
+  const handleAddSymbol = () => {
+    if (!newSymbol.trim()) {
+      toast.error(language === 'en' ? 'Please enter a symbol' : 'لطفاً نماد ارز را وارد کنید');
+      return;
+    }
+    
+    const symbol = newSymbol.trim().toUpperCase();
+    if (cryptoSymbols.includes(symbol)) {
+      toast.error(language === 'en' ? 'Symbol already exists' : 'این نماد قبلاً اضافه شده');
+      return;
+    }
+    
+    setCryptoSymbols(prev => [...prev, symbol]);
+    setNewSymbol('');
+    setNewSymbolDialog(false);
+    toast.success(language === 'en' ? 'Symbol added successfully' : 'نماد با موفقیت اضافه شد');
+  };
+
+  const handleRemoveSymbol = (symbol: string) => {
+    setCryptoSymbols(prev => prev.filter(s => s !== symbol));
+    toast.success(language === 'en' ? 'Symbol removed successfully' : 'نماد با موفقیت حذف شد');
   };
 
   return (
@@ -155,17 +319,16 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
         <p className="text-muted-foreground">{t.subtitle}</p>
       </div>
 
-      <Tabs defaultValue="profile" className="space-y-6">
-        <TabsList className="grid w-full grid-cols-5">
-          <TabsTrigger value="profile">{t.profile}</TabsTrigger>
+      <Tabs defaultValue="account" className="space-y-6">
+        <TabsList className="grid w-full grid-cols-4">
+          <TabsTrigger value="account">{t.account}</TabsTrigger>
           <TabsTrigger value="notifications">{t.notifications}</TabsTrigger>
           <TabsTrigger value="appearance">{t.appearance}</TabsTrigger>
-          <TabsTrigger value="security">{t.security}</TabsTrigger>
-          <TabsTrigger value="about">{t.about}</TabsTrigger>
+          <TabsTrigger value="symbols">{t.symbols}</TabsTrigger>
         </TabsList>
 
-        {/* Profile Settings */}
-        <TabsContent value="profile" className="space-y-6">
+        {/* Account & Security Settings */}
+        <TabsContent value="account" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
@@ -177,18 +340,30 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label htmlFor="username">{t.username}</Label>
-                  <Input id="username" defaultValue="admin" />
+                  <Input 
+                    id="username" 
+                    value={profileData.username}
+                    onChange={(e) => handleProfileChange('username', e.target.value)}
+                  />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="email">{t.email}</Label>
-                  <Input id="email" type="email" defaultValue="admin@tethonic.com" />
+                  <Input 
+                    id="email" 
+                    type="email" 
+                    value={profileData.email}
+                    onChange={(e) => handleProfileChange('email', e.target.value)}
+                  />
                 </div>
               </div>
               
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div className="space-y-2">
                   <Label>{t.language}</Label>
-                  <Select defaultValue={language}>
+                  <Select 
+                    value={profileData.language}
+                    onValueChange={(value) => handleProfileChange('language', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -200,7 +375,10 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
                 </div>
                 <div className="space-y-2">
                   <Label>{t.timezone}</Label>
-                  <Select defaultValue="utc">
+                  <Select 
+                    value={profileData.timezone}
+                    onValueChange={(value) => handleProfileChange('timezone', value)}
+                  >
                     <SelectTrigger>
                       <SelectValue />
                     </SelectTrigger>
@@ -212,6 +390,54 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
                     </SelectContent>
                   </Select>
                 </div>
+              </div>
+            </CardContent>
+          </Card>
+
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2">
+                <Shield className="h-5 w-5" />
+                {t.changePassword}
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              <div className="grid grid-cols-1 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="current-password">{t.currentPassword}</Label>
+                  <Input 
+                    id="current-password" 
+                    type="password"
+                    value={passwordData.currentPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, currentPassword: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="new-password">{t.newPassword}</Label>
+                  <Input 
+                    id="new-password" 
+                    type="password"
+                    value={passwordData.newPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, newPassword: e.target.value }))}
+                  />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="confirm-password">{t.confirmPassword}</Label>
+                  <Input 
+                    id="confirm-password" 
+                    type="password"
+                    value={passwordData.confirmPassword}
+                    onChange={(e) => setPasswordData(prev => ({ ...prev, confirmPassword: e.target.value }))}
+                  />
+                </div>
+                <Button 
+                  onClick={handlePasswordChange}
+                  disabled={isChangingPassword}
+                  className="gap-2 w-fit"
+                >
+                  {isChangingPassword && <RefreshCw className="h-4 w-4 animate-spin" />}
+                  {t.changePassword}
+                </Button>
               </div>
             </CardContent>
           </Card>
@@ -235,7 +461,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
                     </Label>
                   </div>
                   <Switch
-                    checked={value}
+                    checked={value as boolean}
                     onCheckedChange={(checked) => handleNotificationChange(key, checked)}
                   />
                 </div>
@@ -284,119 +510,144 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
           </Card>
         </TabsContent>
 
-        {/* Security Settings */}
-        <TabsContent value="security" className="space-y-6">
+        {/* Crypto Symbols Settings */}
+        <TabsContent value="symbols" className="space-y-6">
           <Card>
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <Shield className="h-5 w-5" />
-                {t.securitySettings}
+                <Coins className="h-5 w-5" />
+                {t.cryptoSymbols}
               </CardTitle>
             </CardHeader>
             <CardContent className="space-y-6">
-              <div className="space-y-4">
-                <h3 className="font-medium">{t.changePassword}</h3>
-                <div className="grid grid-cols-1 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="current-password">{t.currentPassword}</Label>
-                    <Input id="current-password" type="password" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="new-password">{t.newPassword}</Label>
-                    <Input id="new-password" type="password" />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="confirm-password">{t.confirmPassword}</Label>
-                    <Input id="confirm-password" type="password" />
-                  </div>
-                </div>
-              </div>
-
-              <Separator />
-
-              <div className="flex items-center justify-between">
-                <div className="space-y-0.5">
-                  <Label className="text-base font-medium">{t.twoFactor}</Label>
-                  <p className="text-sm text-muted-foreground">
-                    {language === 'en' 
-                      ? 'Add an extra layer of security to your account'
-                      : 'لایه امنیتی اضافی به حساب خود اضافه کنید'
-                    }
-                  </p>
-                </div>
-                <Button variant="outline">
-                  {language === 'en' ? 'Setup' : 'تنظیم'}
-                </Button>
-              </div>
-            </CardContent>
-          </Card>
-        </TabsContent>
-
-        {/* About */}
-        <TabsContent value="about" className="space-y-6">
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Smartphone className="h-5 w-5" />
-                {t.appInfo}
-              </CardTitle>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div className="space-y-4">
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t.version}
-                    </Label>
-                    <p className="text-lg font-semibold">1.0.0</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t.buildDate}
-                    </Label>
-                    <p className="text-lg font-semibold">August 24, 2025</p>
-                  </div>
-                  <div>
-                    <Label className="text-sm font-medium text-muted-foreground">
-                      {t.developer}
-                    </Label>
-                    <p className="text-lg font-semibold">Tethonic Team</p>
-                  </div>
-                </div>
-                <div className="space-y-4">
-                  <div className="text-center p-6 border rounded-lg">
-                    <div className="w-16 h-16 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-2xl flex items-center justify-center mx-auto mb-4">
-                      <Globe className="h-8 w-8 text-white" />
+              <div className="flex justify-between items-center">
+                <p className="text-sm text-muted-foreground">
+                  {language === 'en' 
+                    ? 'Add cryptocurrency symbols to track in your dashboard'
+                    : 'نمادهای ارز دیجیتال برای نمایش در داشبورد اضافه کنید'
+                  }
+                </p>
+                <Dialog open={newSymbolDialog} onOpenChange={setNewSymbolDialog}>
+                  <DialogTrigger asChild>
+                    <Button className="gap-2">
+                      <Plus className="h-4 w-4" />
+                      {t.addSymbol}
+                    </Button>
+                  </DialogTrigger>
+                  <DialogContent className="max-w-sm">
+                    <DialogHeader>
+                      <DialogTitle>{t.addSymbol}</DialogTitle>
+                      <DialogDescription>
+                        {language === 'en' 
+                          ? 'Enter the symbol of the cryptocurrency you want to track'
+                          : 'نماد ارز دیجیتالی که می‌خواهید دنبال کنید را وارد کنید'
+                        }
+                      </DialogDescription>
+                    </DialogHeader>
+                    <div className="space-y-4">
+                      <div className="space-y-2">
+                        <Label>Symbol</Label>
+                        <Input
+                          value={newSymbol}
+                          onChange={(e) => setNewSymbol(e.target.value)}
+                          placeholder={t.symbolPlaceholder}
+                          className="uppercase"
+                        />
+                      </div>
+                      <div className="flex gap-2">
+                        <Button onClick={handleAddSymbol} className="flex-1">
+                          {t.add}
+                        </Button>
+                        <Button variant="outline" onClick={() => setNewSymbolDialog(false)} className="flex-1">
+                          {t.cancel}
+                        </Button>
+                      </div>
                     </div>
-                    <h3 className="text-lg font-semibold mb-2">Tethonic</h3>
-                    <p className="text-sm text-muted-foreground">
-                      {language === 'en'
-                        ? 'Professional Digital Currency Analysis Platform'
-                        : 'پلتفرم حرفه‌ای تحلیل ارزهای دیجیتال'
-                      }
-                    </p>
-                    <Badge variant="outline" className="mt-2">
-                      PWA Ready
-                    </Badge>
-                  </div>
-                </div>
+                  </DialogContent>
+                </Dialog>
               </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+                {cryptoSymbols.map((symbol) => (
+                  <div key={symbol} className="flex items-center justify-between p-3 border rounded-lg bg-card">
+                    <div className="flex items-center gap-3">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-600 to-cyan-600 rounded-full flex items-center justify-center">
+                        <span className="text-white text-xs font-bold">{symbol.slice(0, 2)}</span>
+                      </div>
+                      <span className="font-medium">{symbol}</span>
+                    </div>
+                    <Button
+                      size="sm"
+                      variant="ghost"
+                      onClick={() => handleRemoveSymbol(symbol)}
+                      className="text-red-600 hover:text-red-700 h-8 w-8 p-0"
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
+                  </div>
+                ))}
+              </div>
+              
+              {cryptoSymbols.length === 0 && (
+                <div className="text-center py-8 text-muted-foreground">
+                  {language === 'en' 
+                    ? 'No symbols added yet. Click "Add Symbol" to get started.'
+                    : 'هنوز نمادی اضافه نشده. روی "افزودن نماد" کلیک کنید.'
+                  }
+                </div>
+              )}
             </CardContent>
           </Card>
         </TabsContent>
       </Tabs>
 
-      {/* Action Buttons */}
-      <div className="flex items-center gap-4">
-        <Button onClick={handleSaveSettings} className="gap-2">
-          <Save className="h-4 w-4" />
-          {t.save}
-        </Button>
-        <Button variant="outline" className="gap-2">
-          <RefreshCw className="h-4 w-4" />
-          {t.reset}
-        </Button>
-      </div>
+      {/* Backup & Restore Footer */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Database className="h-5 w-5" />
+            {t.backup}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <h3 className="font-medium">{t.exportBackup}</h3>
+              <p className="text-sm text-muted-foreground">
+                {t.exportDesc}
+              </p>
+              <Button onClick={handleExportBackup} className="gap-2 w-full">
+                <Download className="h-4 w-4" />
+                {t.exportBackup}
+              </Button>
+            </div>
+
+            <div className="space-y-2">
+              <h3 className="font-medium">{t.importBackup}</h3>
+              <p className="text-sm text-muted-foreground">
+                {t.importDesc}
+              </p>
+              <div className="flex items-center gap-2">
+                <Input
+                  type="file"
+                  accept=".json"
+                  onChange={handleImportBackup}
+                  className="hidden"
+                  id="backup-file"
+                />
+                <Label htmlFor="backup-file" className="cursor-pointer w-full">
+                  <Button variant="outline" className="gap-2 w-full" asChild>
+                    <span>
+                      <Upload className="h-4 w-4" />
+                      {t.importBackup}
+                    </span>
+                  </Button>
+                </Label>
+              </div>
+            </div>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };

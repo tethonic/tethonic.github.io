@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Button } from '@/components/ui/button';
@@ -17,6 +18,69 @@ interface DashboardHomeProps {
 }
 
 const DashboardHome = ({ language }: DashboardHomeProps) => {
+  // Load crypto symbols from localStorage
+  const [cryptoSymbols, setCryptoSymbols] = useState<string[]>(() => {
+    try {
+      const saved = localStorage.getItem('tetonicSettings');
+      const settings = saved ? JSON.parse(saved) : null;
+      return settings?.cryptoSymbols || ['BTC', 'ETH', 'BNB', 'ADA', 'SOL'];
+    } catch {
+      return ['BTC', 'ETH', 'BNB', 'ADA', 'SOL'];
+    }
+  });
+
+  // Mock cryptocurrency data based on symbols
+  const [cryptocurrencies, setCryptocurrencies] = useState(() => {
+    const mockData: any = {
+      'BTC': { symbol: 'BTC', name: 'Bitcoin', price: 67500, change: 2.5, marketCap: 1320000000000, volume: 24500000000 },
+      'ETH': { symbol: 'ETH', name: 'Ethereum', price: 3450, change: -1.2, marketCap: 415000000000, volume: 15200000000 },
+      'BNB': { symbol: 'BNB', name: 'BNB', price: 315, change: 3.1, marketCap: 48500000000, volume: 1800000000 },
+      'ADA': { symbol: 'ADA', name: 'Cardano', price: 0.48, change: -0.8, marketCap: 17200000000, volume: 950000000 },
+      'SOL': { symbol: 'SOL', name: 'Solana', price: 145, change: 5.2, marketCap: 64500000000, volume: 2100000000 },
+      'DOGE': { symbol: 'DOGE', name: 'Dogecoin', price: 0.085, change: 1.8, marketCap: 12100000000, volume: 560000000 },
+      'DOT': { symbol: 'DOT', name: 'Polkadot', price: 6.5, change: -2.1, marketCap: 8200000000, volume: 380000000 },
+      'MATIC': { symbol: 'MATIC', name: 'Polygon', price: 0.92, change: 4.2, marketCap: 8500000000, volume: 420000000 },
+    };
+    
+    return cryptoSymbols.map(symbol => 
+      mockData[symbol] || { symbol, name: symbol, price: 0, change: 0, marketCap: 0, volume: 0 }
+    );
+  });
+
+  // Listen for changes in localStorage
+  useEffect(() => {
+    const handleStorageChange = () => {
+      try {
+        const saved = localStorage.getItem('tetonicSettings');
+        const settings = saved ? JSON.parse(saved) : null;
+        if (settings?.cryptoSymbols) {
+          setCryptoSymbols(settings.cryptoSymbols);
+        }
+      } catch {
+        // ignore errors
+      }
+    };
+
+    // Update cryptocurrencies when symbols change
+    const mockData: any = {
+      'BTC': { symbol: 'BTC', name: 'Bitcoin', price: 67500, change: 2.5, marketCap: 1320000000000, volume: 24500000000 },
+      'ETH': { symbol: 'ETH', name: 'Ethereum', price: 3450, change: -1.2, marketCap: 415000000000, volume: 15200000000 },
+      'BNB': { symbol: 'BNB', name: 'BNB', price: 315, change: 3.1, marketCap: 48500000000, volume: 1800000000 },
+      'ADA': { symbol: 'ADA', name: 'Cardano', price: 0.48, change: -0.8, marketCap: 17200000000, volume: 950000000 },
+      'SOL': { symbol: 'SOL', name: 'Solana', price: 145, change: 5.2, marketCap: 64500000000, volume: 2100000000 },
+      'DOGE': { symbol: 'DOGE', name: 'Dogecoin', price: 0.085, change: 1.8, marketCap: 12100000000, volume: 560000000 },
+      'DOT': { symbol: 'DOT', name: 'Polkadot', price: 6.5, change: -2.1, marketCap: 8200000000, volume: 380000000 },
+      'MATIC': { symbol: 'MATIC', name: 'Polygon', price: 0.92, change: 4.2, marketCap: 8500000000, volume: 420000000 },
+    };
+    
+    setCryptocurrencies(cryptoSymbols.map(symbol => 
+      mockData[symbol] || { symbol, name: symbol, price: 0, change: 0, marketCap: 0, volume: 0 }
+    ));
+
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, [cryptoSymbols]);
+
   const texts = {
     en: {
       welcome: 'Welcome to Tethonic',
@@ -40,7 +104,16 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
       strong: 'Strong',
       buy: 'BUY',
       sell: 'SELL',
-      hold: 'HOLD'
+      hold: 'HOLD',
+      // Cryptocurrencies
+      cryptoMarket: 'Cryptocurrency Market',
+      symbol: 'Symbol',
+      name: 'Name',
+      price: 'Price',
+      change: 'Change',
+      marketCap: 'Market Cap',
+      volume: 'Volume',
+      supply: 'Supply'
     },
     fa: {
       welcome: 'به تتونیک خوش آمدید',
@@ -64,7 +137,16 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
       strong: 'قوی',
       buy: 'خرید',
       sell: 'فروش',
-      hold: 'نگهداری'
+      hold: 'نگهداری',
+      // Cryptocurrencies
+      cryptoMarket: 'بازار ارزهای دیجیتال',
+      symbol: 'نماد',
+      name: 'نام',
+      price: 'قیمت',
+      change: 'تغییر',
+      marketCap: 'ارزش بازار',
+      volume: 'حجم',
+      supply: 'عرضه'
     }
   };
 
@@ -284,6 +366,62 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
           </CardContent>
         </Card>
       </div>
+
+      {/* Cryptocurrency Market */}
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <TrendingUp className="h-5 w-5" />
+            {t.cryptoMarket}
+          </CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="overflow-x-auto">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b">
+                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.symbol}</th>
+                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.name}</th>
+                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.price}</th>
+                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.change}</th>
+                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.marketCap}</th>
+                  <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.volume}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {cryptocurrencies.map((crypto: any) => (
+                  <tr key={crypto.id} className="border-b hover:bg-muted/50 transition-colors">
+                    <td className="py-3 px-4">
+                      <div className="font-semibold">{crypto.symbol}</div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="text-sm text-muted-foreground">{crypto.name}</div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="font-medium">${crypto.price.toLocaleString()}</div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className={`font-medium ${crypto.change >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                        {crypto.change >= 0 ? '+' : ''}{crypto.change}%
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="text-sm">
+                        ${(crypto.marketCap / 1000000000).toFixed(2)}B
+                      </div>
+                    </td>
+                    <td className="py-3 px-4">
+                      <div className="text-sm">
+                        ${(crypto.volume / 1000000000).toFixed(2)}B
+                      </div>
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </CardContent>
+      </Card>
     </div>
   );
 };
