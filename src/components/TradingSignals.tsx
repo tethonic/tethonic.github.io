@@ -34,7 +34,7 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
     sellSignals, 
     holdSignals, 
     highConfidenceSignals 
-  } = useTradingSignals(cryptoData);
+  } = useTradingSignals(cryptoData, language);
 
   // Get unique symbols from crypto data
   const availableSymbols = [...new Set(cryptoData.map(crypto => crypto.symbol))].sort();
@@ -45,17 +45,35 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
   };
 
   // Progress bar style helper
-  const getProgressStyle = (confidence: number) => {
+  const getProgressWidthClass = (confidence: number) => {
     const width = Math.min(100, Math.max(0, confidence));
-    return { width: `${width}%` };
+    if (width >= 90) return 'w-full';
+    if (width >= 80) return 'w-4/5';
+    if (width >= 70) return 'w-3/4';
+    if (width >= 60) return 'w-3/5';
+    if (width >= 50) return 'w-1/2';
+    if (width >= 40) return 'w-2/5';
+    if (width >= 30) return 'w-1/3';
+    if (width >= 20) return 'w-1/5';
+    if (width >= 10) return 'w-1/12';
+    return 'w-0';
   };
 
   const getSignalColor = (signal: string) => {
+    // English signals
+    if (signal.includes('Strong Buy')) return 'bg-green-600 text-white';
+    if (signal.includes('Buy') && !signal.includes('Strong')) return 'bg-green-500 text-white';
+    if (signal.includes('Neutral')) return 'bg-yellow-500 text-white';
+    if (signal.includes('Sell') && !signal.includes('Strong')) return 'bg-red-500 text-white';
+    if (signal.includes('Strong Sell')) return 'bg-red-600 text-white';
+    
+    // Persian signals
     if (signal.includes('قوی خرید')) return 'bg-green-600 text-white';
-    if (signal.includes('خرید')) return 'bg-green-500 text-white';
+    if (signal.includes('خرید') && !signal.includes('قوی')) return 'bg-green-500 text-white';
     if (signal.includes('خنثی')) return 'bg-yellow-500 text-white';
     if (signal.includes('فروش') && !signal.includes('قوی')) return 'bg-red-500 text-white';
     if (signal.includes('قوی فروش')) return 'bg-red-600 text-white';
+    
     return 'bg-gray-500 text-white';
   };
 
@@ -93,7 +111,16 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
       stopLoss: 'Stop Loss',
       takeProfit: 'Take Profit',
       riskReward: 'Risk/Reward',
-      lastUpdate: 'Last Update'
+      lastUpdate: 'Last Update',
+      trading: 'Trading',
+      moreReasons: 'more items',
+      entryLabel: 'Entry',
+      stopLossLabel: 'Stop',
+      takeProfitLabel: 'Profit',
+      liveSignals: 'Live signals active',
+      lastUpdateTime: 'Last update',
+      live: 'Live',
+      allSymbols: 'All Symbols'
     },
     fa: {
       title: 'سیگنال‌های معاملاتی',
@@ -119,7 +146,16 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
       stopLoss: 'حد ضرر',
       takeProfit: 'هدف سود',
       riskReward: 'ریسک/سود',
-      lastUpdate: 'آخرین به‌روزرسانی'
+      lastUpdate: 'آخرین به‌روزرسانی',
+      trading: 'معاملات',
+      moreReasons: 'مورد دیگر',
+      entryLabel: 'ورود',
+      stopLossLabel: 'ضرر',
+      takeProfitLabel: 'سود',
+      liveSignals: 'سیگنال‌های لحظه‌ای فعال',
+      lastUpdateTime: 'آخرین به‌روزرسانی',
+      live: 'زنده',
+      allSymbols: 'همه نمادها'
     }
   };
 
@@ -157,7 +193,7 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
             <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.confidence}</th>
             <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.action}</th>
             <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.reasons}</th>
-            <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>معاملات</th>
+            <th className={`py-3 px-4 text-left font-medium ${isRTL ? 'text-right' : ''}`}>{t.trading}</th>
           </tr>
         </thead>
         <tbody>
@@ -183,8 +219,7 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
                       className={`h-2 rounded-full transition-all duration-300 ${
                         signalData.confidence >= 70 ? 'bg-green-600' :
                         signalData.confidence >= 50 ? 'bg-yellow-500' : 'bg-red-500'
-                      }`}
-                      style={getProgressStyle(signalData.confidence)}
+                      } ${getProgressWidthClass(signalData.confidence)}`}
                     ></div>
                   </div>
                   <span className="text-sm font-medium min-w-[3rem]">{signalData.confidence}%</span>
@@ -208,7 +243,7 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
                   ))}
                   {signalData.reason.length > 2 && (
                     <div className="text-xs text-muted-foreground">
-                      +{signalData.reason.length - 2} مورد دیگر
+                      +{signalData.reason.length - 2} {t.moreReasons}
                     </div>
                   )}
                 </div>
@@ -218,18 +253,18 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
                   <div className="text-xs space-y-1">
                     <div className="flex items-center gap-1">
                       <Target className="h-3 w-3" />
-                      <span>ورود: ${signalData.entry_price.toFixed(6)}</span>
+                      <span>{t.entryLabel}: ${signalData.entry_price.toFixed(6)}</span>
                     </div>
                     {signalData.stop_loss && (
                       <div className="flex items-center gap-1 text-red-600">
                         <AlertTriangle className="h-3 w-3" />
-                        <span>ضرر: ${signalData.stop_loss.toFixed(6)}</span>
+                        <span>{t.stopLossLabel}: ${signalData.stop_loss.toFixed(6)}</span>
                       </div>
                     )}
                     {signalData.take_profit && (
                       <div className="flex items-center gap-1 text-green-600">
                         <DollarSign className="h-3 w-3" />
-                        <span>سود: ${signalData.take_profit.toFixed(6)}</span>
+                        <span>{t.takeProfitLabel}: ${signalData.take_profit.toFixed(6)}</span>
                       </div>
                     )}
                     {signalData.risk_reward_ratio && (
@@ -248,7 +283,7 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
   );
 
   return (
-    <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
+    <div dir={isRTL ? 'rtl' : 'ltr'} className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
@@ -261,11 +296,11 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
             <Filter className="h-4 w-4 text-muted-foreground" />
             <Select value={selectedSymbol} onValueChange={setSelectedSymbol}>
               <SelectTrigger className="w-32">
-                <SelectValue placeholder="همه نمادها" />
+                <SelectValue placeholder={t.allSymbols} />
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="all">
-                  {language === 'fa' ? 'همه نمادها' : 'All Symbols'}
+                  {t.allSymbols}
                 </SelectItem>
                 {availableSymbols.map((symbol) => (
                   <SelectItem key={symbol} value={symbol}>
@@ -389,11 +424,11 @@ const TradingSignalsComponent = ({ language, cryptoData }: TradingSignalsProps) 
             <div className="flex items-center gap-2">
               <div className="w-3 h-3 bg-green-500 rounded-full animate-pulse"></div>
               <span className="text-sm font-medium">
-                سیگنال‌های لحظه‌ای فعال - آخرین به‌روزرسانی: {new Date().toLocaleTimeString('fa-IR')}
+                {t.liveSignals} - {t.lastUpdateTime}: {new Date().toLocaleTimeString(language === 'fa' ? 'fa-IR' : 'en-US')}
               </span>
             </div>
             <Badge variant="outline" className="border-green-500 text-green-700 dark:text-green-300">
-              زنده
+              {t.live}
             </Badge>
           </div>
         </CardContent>

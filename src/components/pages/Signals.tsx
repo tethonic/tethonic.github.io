@@ -14,6 +14,25 @@ const Signals = ({ language }: SignalsProps) => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
+  const isRTL = language === 'fa';
+
+  const texts = {
+    en: {
+      loading: 'Loading trading signals...',
+      noSymbols: 'Please add cryptocurrency symbols in Settings first',
+      error: 'Error loading data',
+      retry: 'Retry'
+    },
+    fa: {
+      loading: 'در حال بارگذاری سیگنال‌های معاملاتی...',
+      noSymbols: 'لطفاً ابتدا نمادهای ارز را در تنظیمات اضافه کنید',
+      error: 'خطا در بارگذاری داده‌ها',
+      retry: 'تلاش مجدد'
+    }
+  };
+
+  const t = texts[language];
+
   useEffect(() => {
     const fetchCryptoData = async () => {
       try {
@@ -27,7 +46,7 @@ const Signals = ({ language }: SignalsProps) => {
 
         // If no symbols configured, show configuration message
         if (!symbols || symbols.length === 0) {
-          setError(language === 'fa' ? 'لطفاً ابتدا نمادهای ارز را در تنظیمات اضافه کنید' : 'Please add cryptocurrency symbols in Settings first');
+          setError(t.noSymbols);
           setLoading(false);
           return;
         }
@@ -40,7 +59,7 @@ const Signals = ({ language }: SignalsProps) => {
         console.log(`Signals: Final data: ${sortedData.length} cryptocurrencies loaded`);
       } catch (err) {
         console.error('Error fetching crypto data:', err);
-        setError(language === 'fa' ? 'خطا در دریافت اطلاعات' : 'Error fetching data');
+        setError(t.error);
       } finally {
         setLoading(false);
       }
@@ -55,7 +74,7 @@ const Signals = ({ language }: SignalsProps) => {
 
   if (loading) {
     return (
-      <div className="p-6 space-y-6">
+      <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
         <div className="space-y-2">
           <Skeleton className="h-8 w-64" />
           <Skeleton className="h-4 w-96" />
@@ -91,20 +110,30 @@ const Signals = ({ language }: SignalsProps) => {
             </div>
           </CardContent>
         </Card>
+        
+        <div className="text-center text-muted-foreground">
+          {t.loading}
+        </div>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="p-6">
+      <div className={`p-6 ${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
         <Card className="border-red-200 bg-red-50 dark:bg-red-900/20 dark:border-red-800">
           <CardContent className="p-6 text-center">
             <div className="text-red-600 dark:text-red-400 mb-2">⚠️</div>
             <h3 className="text-lg font-semibold text-red-800 dark:text-red-200 mb-2">
-              {language === 'fa' ? 'خطا در بارگذاری داده‌ها' : 'Error Loading Data'}
+              {t.error}
             </h3>
-            <p className="text-red-600 dark:text-red-400">{error}</p>
+            <p className="text-red-600 dark:text-red-400 mb-4">{error}</p>
+            <button 
+              onClick={() => window.location.reload()} 
+              className="px-4 py-2 bg-red-600 text-white rounded-md hover:bg-red-700 transition-colors"
+            >
+              {t.retry}
+            </button>
           </CardContent>
         </Card>
       </div>
@@ -112,10 +141,12 @@ const Signals = ({ language }: SignalsProps) => {
   }
 
   return (
-    <TradingSignalsComponent 
-      language={language} 
-      cryptoData={cryptoData}
-    />
+    <div className={`${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <TradingSignalsComponent 
+        language={language} 
+        cryptoData={cryptoData}
+      />
+    </div>
   );
 };
 

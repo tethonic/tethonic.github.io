@@ -112,7 +112,17 @@ const TechnicalAnalysisComponent = ({ language, cryptoData }: TechnicalAnalysisP
       normal: 'Normal',
       strong: 'Strong',
       moderate: 'Moderate',
-      weak: 'Weak'
+      weak: 'Weak',
+      // AI Recommendation
+      aiRecommendation: 'AI Trading Recommendation',
+      strongBuySignal: 'Strong Buy - Very Positive Signal',
+      buySignal: 'Buy - Positive Signal',
+      neutralSignal: 'Neutral - Wait for Better Signal',
+      sellSignal: 'Sell - Negative Signal',
+      strongSellSignal: 'Strong Sell - Very Negative Signal',
+      analysisDescription: 'This analysis is based on a combination of RSI, MACD, Bollinger Bands and volume analysis.',
+      confidenceLevel: 'Confidence Level',
+      calculating: 'Calculating technical analysis...'
     },
     fa: {
       title: 'تحلیل تکنیکال لحظه‌ای',
@@ -166,7 +176,17 @@ const TechnicalAnalysisComponent = ({ language, cryptoData }: TechnicalAnalysisP
       normal: 'عادی',
       strong: 'قوی',
       moderate: 'متوسط',
-      weak: 'ضعیف'
+      weak: 'ضعیف',
+      // AI Recommendation
+      aiRecommendation: 'توصیه معاملاتی هوش مصنوعی',
+      strongBuySignal: 'خرید قوی - سیگنال بسیار مثبت',
+      buySignal: 'خرید - سیگنال مثبت',
+      neutralSignal: 'خنثی - انتظار برای سیگنال بهتر',
+      sellSignal: 'فروش - سیگنال منفی',
+      strongSellSignal: 'فروش قوی - سیگنال بسیار منفی',
+      analysisDescription: 'این تحلیل بر اساس ترکیب شاخص‌های RSI، MACD، نوارهای بولینگر و تحلیل حجم انجام شده است.',
+      confidenceLevel: 'سطح اطمینان',
+      calculating: 'محاسبه تحلیل تکنیکال...'
     }
   };
 
@@ -175,11 +195,11 @@ const TechnicalAnalysisComponent = ({ language, cryptoData }: TechnicalAnalysisP
 
   if (!technicalSignal) {
     return (
-      <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
+      <div dir={isRTL ? 'rtl' : 'ltr'} className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
         <div className="flex items-center justify-center h-64">
           <div className="text-center space-y-4">
             <Brain className="h-8 w-8 animate-pulse mx-auto text-muted-foreground" />
-            <p className="text-muted-foreground">محاسبه تحلیل تکنیکال...</p>
+            <p className="text-muted-foreground">{t.calculating}</p>
           </div>
         </div>
       </div>
@@ -187,7 +207,7 @@ const TechnicalAnalysisComponent = ({ language, cryptoData }: TechnicalAnalysisP
   }
 
   return (
-    <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
+    <div dir={isRTL ? 'rtl' : 'ltr'} className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
@@ -444,7 +464,7 @@ const TechnicalAnalysisComponent = ({ language, cryptoData }: TechnicalAnalysisP
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Brain className="h-5 w-5" />
-            توصیه معاملاتی هوش مصنوعی
+            {t.aiRecommendation}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -453,16 +473,16 @@ const TechnicalAnalysisComponent = ({ language, cryptoData }: TechnicalAnalysisP
               {getSignalIcon(technicalSignal.overall_signal)}
             </div>
             <div className="text-2xl font-bold">
-              {technicalSignal.overall_signal === 'STRONG_BUY' && 'خرید قوی - سیگنال بسیار مثبت'}
-              {technicalSignal.overall_signal === 'BUY' && 'خرید - سیگنال مثبت'}
-              {technicalSignal.overall_signal === 'NEUTRAL' && 'خنثی - انتظار برای سیگنال بهتر'}
-              {technicalSignal.overall_signal === 'SELL' && 'فروش - سیگنال منفی'}
-              {technicalSignal.overall_signal === 'STRONG_SELL' && 'فروش قوی - سیگنال بسیار منفی'}
+              {technicalSignal.overall_signal === 'STRONG_BUY' && t.strongBuySignal}
+              {technicalSignal.overall_signal === 'BUY' && t.buySignal}
+              {technicalSignal.overall_signal === 'NEUTRAL' && t.neutralSignal}
+              {technicalSignal.overall_signal === 'SELL' && t.sellSignal}
+              {technicalSignal.overall_signal === 'STRONG_SELL' && t.strongSellSignal}
             </div>
             <div className="text-muted-foreground">
-              این تحلیل بر اساس ترکیب شاخص‌های RSI، MACD، نوارهای بولینگر و تحلیل حجم انجام شده است.
+              {t.analysisDescription}
               <br />
-              سطح اطمینان: <strong>{technicalSignal.confidence.toFixed(1)}%</strong>
+              {t.confidenceLevel}: <strong>{technicalSignal.confidence.toFixed(1)}%</strong>
             </div>
           </div>
         </CardContent>

@@ -11,6 +11,21 @@ const Analysis = ({ language }: AnalysisProps) => {
   const [cryptoData, setCryptoData] = useState<CryptocurrencyData[]>([]);
   const [loading, setLoading] = useState(true);
 
+  const isRTL = language === 'fa';
+
+  const texts = {
+    en: {
+      loading: 'Loading technical analysis...',
+      error: 'Error loading analysis data'
+    },
+    fa: {
+      loading: 'در حال بارگذاری تحلیل تکنیکال...',
+      error: 'خطا در بارگذاری داده‌های تحلیل'
+    }
+  };
+
+  const t = texts[language];
+
   // Load crypto data for analysis
   useEffect(() => {
     const loadCryptoData = async () => {
@@ -40,15 +55,17 @@ const Analysis = ({ language }: AnalysisProps) => {
       <div className="flex items-center justify-center h-64">
         <div className="text-center space-y-4">
           <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-          <p className="text-muted-foreground">
-            {language === 'en' ? 'Loading analysis data...' : 'بارگذاری داده‌های تحلیل...'}
-          </p>
+          <p className="text-muted-foreground">{t.loading}</p>
         </div>
       </div>
     );
   }
 
-  return <TechnicalAnalysisComponent language={language} cryptoData={cryptoData} />;
+  return (
+    <div className={`${isRTL ? 'text-right' : 'text-left'}`} dir={isRTL ? 'rtl' : 'ltr'}>
+      <TechnicalAnalysisComponent language={language} cryptoData={cryptoData} />
+    </div>
+  );
 };
 
 export default Analysis;

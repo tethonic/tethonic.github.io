@@ -103,7 +103,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   };
 
   const SidebarContent = () => (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full" dir="ltr">
       {/* Logo */}
       <div className="p-6 border-b border-border">
         <div className="flex items-center gap-3">
@@ -124,14 +124,16 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
             <Button
               key={item.path}
               variant={isActive ? 'default' : 'ghost'}
-              className={`w-full justify-start gap-3 cursor-pointer hover:cursor-pointer ${language === 'fa' ? 'flex-row-reverse' : ''}`}
+              className={`w-full justify-start gap-3 cursor-pointer hover:cursor-pointer ${
+                language === 'fa' ? 'text-right' : ''
+              }`}
               onClick={() => {
                 navigate(item.path);
                 setIsMobileMenuOpen(false);
               }}
             >
-              <Icon className="h-5 w-5" />
-              {item.label}
+              <Icon className="h-5 w-5 flex-shrink-0" />
+              <span className="flex-1">{item.label}</span>
             </Button>
           );
         })}
@@ -175,7 +177,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
   return (
     <div className={`flex h-screen w-screen bg-background overflow-hidden ${language === 'fa' ? 'fa-lang' : 'en-lang'}`} dir={language === 'fa' ? 'rtl' : 'ltr'}>
       {/* Desktop Sidebar */}
-      <div className="hidden lg:flex lg:w-64 lg:flex-col lg:border-r lg:border-border">
+      <div className={`hidden lg:flex lg:w-64 lg:flex-col ${language === 'fa' ? 'lg:border-l lg:border-border' : 'lg:border-r lg:border-border'}`}>
         <SidebarContent />
       </div>
 
@@ -192,7 +194,7 @@ const Dashboard = ({ onLogout }: DashboardProps) => {
                     <Menu className="h-5 w-5" />
                   </Button>
                 </SheetTrigger>
-                <SheetContent side="left" className="p-0 w-64">
+                <SheetContent side={language === 'fa' ? 'right' : 'left'} className="p-0 w-64">
                   <SidebarContent />
                 </SheetContent>
               </Sheet>

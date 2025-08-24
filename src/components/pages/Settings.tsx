@@ -339,7 +339,7 @@ const SettingsPage = ({ language }: SettingsPageProps) => {
   };
 
   return (
-    <div className={`p-6 space-y-6 custom-scrollbar ${isRTL ? 'text-right' : ''}`}>
+    <div className={`p-6 space-y-6 custom-scrollbar ${isRTL ? 'text-right' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="space-y-2">
         <h1 className="text-3xl font-bold">{t.title}</h1>

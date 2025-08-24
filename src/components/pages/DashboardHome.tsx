@@ -347,7 +347,7 @@ const DashboardHome = ({ language }: DashboardHomeProps) => {
   }
 
   return (
-    <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`}>
+    <div className={`p-6 space-y-6 ${isRTL ? 'text-right' : ''}`} dir={isRTL ? 'rtl' : 'ltr'}>
       {/* Header */}
       <div className="flex items-center justify-between">
         <div className="space-y-1">
